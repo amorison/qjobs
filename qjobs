@@ -1,0 +1,58 @@
+#!/usr/bin/python
+from __future__ import print_function
+from subprocess import Popen, PIPE
+import argparse
+import xml.etree.ElementTree as ET
+
+parser = argparse.ArgumentParser(description='qstat wrapper for better output')
+parser.add_argument('-d','--domain',action='store_true',\
+        help='display queue domain')
+parser.add_argument('-t','--total',dest='verbose',action='store_false',\
+        help='only total is displayed')
+parser.add_argument('-v','--verbose',action='store_true',\
+        help='jobs and total are displayed (default)')
+args = parser.parse_args()
+
+f = Popen('\qstat -u amorison -xml -r', shell=True, stdout=PIPE).stdout
+jobsTree = ET.parse(f)
+jobsList = jobsTree.getroot().iter('job_list')
+
+alljobs = []
+bystate = {}
+
+for j in jobsList:
+    ji = j.find('JB_job_number').text
+    jn = j.find('JB_name').text
+    js = j.find('state').text
+    jt = 'not set'
+    jq = ''
+    if js=='r' :
+        jt = j.find('JAT_start_time').text
+        jq = j.find('queue_name').text
+        if not args.domain:
+            jq = jq.rsplit('@')[0]
+    elif js=='dt' :
+        jt = j.find('JAT_start_time').text
+    else:
+        jt = j.find('JB_submission_time').text
+
+    try:
+        bystate[js] += 1
+    except KeyError:
+        bystate[js] = 1
+
+    alljobs.append((ji, jn, js, jt.replace('T',' '), jq))
+
+
+if not alljobs:
+    print('No pending or running job.')
+else:
+    if args.verbose:
+        ljn = max(len(jn) for _,jn,_,_,_ in alljobs)
+        ljs = max(len(js) for _,_,js,_,_ in alljobs)
+
+        for ji,jn,js,jt,jq in alljobs:
+            print(ji, jn.ljust(ljn), js.ljust(ljs), jt, jq, sep='   ')
+
+    a = [('tot',len(alljobs))] + list(bystate.items())
+    print(*('{}: {}'.format(b,c) for b,c in a),sep='   ')

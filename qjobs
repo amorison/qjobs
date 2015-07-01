@@ -5,15 +5,31 @@ import argparse
 import xml.etree.ElementTree as ET
 
 parser = argparse.ArgumentParser(description='qstat wrapper for better output')
+parser.add_argument('-o','--out',default='instqT',\
+        help="""specify output format (default instqT):
+        i: job id,     p: job prior,  n: job name,
+        o: job owner,  s: job state,  t: start/sub time,
+        q: queue,      l: slots,      T: total by state.""")
 parser.add_argument('-d','--domain',action='store_true',\
         help='display queue domain')
-parser.add_argument('-t','--total',dest='verbose',action='store_false',\
-        help='only total is displayed')
-parser.add_argument('-v','--verbose',action='store_true',\
-        help='jobs and total are displayed (default)')
+parser.add_argument('-t','--total',action='store_true',\
+        help='only total is displayed (same as `-o T`)')
+parser.add_argument('-f','--file',type=argparse.FileType('r'),\
+        help='use given xml file as input (for debug)')
 args = parser.parse_args()
 
-f = Popen('\qstat -u amorison -xml -r', shell=True, stdout=PIPE).stdout
+if args.file:
+    f = args.file
+else:
+    f = Popen('\qstat -u amorison -xml -r', shell=True, stdout=PIPE).stdout
+
+if args.total: args.out = ''
+
+columns = ''
+for c in args.out:
+    if c=='T': args.total = True
+    if c in 'ipnostql': columns +=c
+
 jobsTree = ET.parse(f)
 jobsList = jobsTree.getroot().iter('job_list')
 
@@ -21,38 +37,50 @@ alljobs = []
 bystate = {}
 
 for j in jobsList:
-    ji = j.find('JB_job_number').text
-    jn = j.find('JB_name').text
-    js = j.find('state').text
-    jt = 'not set'
-    jq = ''
-    if js=='r' :
-        jt = j.find('JAT_start_time').text
-        jq = j.find('queue_name').text
+    job = {}
+    job['i'] = j.find('JB_job_number').text
+    job['p'] = j.find('JAT_prio').text
+    job['n'] = j.find('JB_name').text
+    job['o'] = j.find('JB_owner').text
+    job['s'] = j.find('state').text
+    job['q'] = ''
+    job['l'] = j.find('slots').text
+    if job['s']=='r' :
+        job['t'] = j.find('JAT_start_time').text
+        job['q'] = j.find('queue_name').text
         if not args.domain:
-            jq = jq.rsplit('@')[0]
-    elif js=='dt' :
-        jt = j.find('JAT_start_time').text
+            job['q'] = job['q'].rsplit('@')[0]
+    elif job['s'] in ['dt','dr'] :
+        job['t'] = j.find('JAT_start_time').text
     else:
-        jt = j.find('JB_submission_time').text
+        try:
+            job['t'] = j.find('JB_submission_time').text
+        except AttributeError:
+            job['t'] = None
+    if job['t']:
+        job['t'] = job['t'].replace('T',' ')
+    else:
+        job['t'] = 'not set'
 
     try:
-        bystate[js] += 1
+        bystate[job['s']] += 1
     except KeyError:
-        bystate[js] = 1
+        bystate[job['s']] = 1
 
-    alljobs.append((ji, jn, js, jt.replace('T',' '), jq))
+    alljobs.append(job)
 
 
 if not alljobs:
     print('No pending or running job.')
 else:
-    if args.verbose:
-        ljn = max(len(jn) for _,jn,_,_,_ in alljobs)
-        ljs = max(len(js) for _,_,js,_,_ in alljobs)
+    if columns:
+        l = {}
+        for c in columns:
+            l[c] = max(len(job[c]) for job in alljobs)
 
-        for ji,jn,js,jt,jq in alljobs:
-            print(ji, jn.ljust(ljn), js.ljust(ljs), jt, jq, sep='   ')
+        for job in alljobs:
+            print(*(job[c].ljust(l[c]) for c in columns), sep='   ')
 
-    a = [('tot',len(alljobs))] + list(bystate.items())
-    print(*('{}: {}'.format(b,c) for b,c in a),sep='   ')
+    if args.total:
+        a = [('tot',len(alljobs))] + list(bystate.items())
+        print(*('{}: {}'.format(b,c) for b,c in a),sep='   ')

@@ -1,14 +1,29 @@
 # qjobs
+
 qstat wrapper
 
 ## compatibility
 
-qjobs only uses built-in Python modules, and should work without any problem
-on both Python 2 and 3.
+qjobs only uses built-in Python modules.
+
+qjobs is developed with Python 3, but only minor
+modifications are required for this script to work with
+Python 2.
+You have to:
+- adapt the she-bang;
+- add `from future import print_function` at the very beginning
+of the script;
+- rename the `configparser` module to `ConfigParser`;
+- rename the `ConfigParser()` function to `SafeConfigParser()`.
 
 ## installation
 
-all you need to do is download the `qjobs` file, it is usable as-is.
+Put `qjobs` in a directory of your choice (you might want to put it in
+a directory which is in your PATH environment variable).
+
+Put `qjobs.rc` (config file) in `~/.config/qjobs/qjobs.rc`
+
+That's it!
 
 ## documentation/examples
 
@@ -17,6 +32,8 @@ to do
 ## TODO
 
 This is a list of features I want to add soon.
+
+an installation script
 
 --sep (-p) to change separator (with '   ' default value)
 
@@ -33,7 +50,3 @@ This is a list of features I want to add soon.
 -u --user user1,user2
 r requested queues
 d time difference (datetime module)
-
-config file (ConfigParser) to be able to change default (raw > file > command)
-this should be done at FIRST (will make adaptation much more simpler)
--c --config to load an other config (default as ~/.config/qjobs/qjobs.rc, should create a commented example)

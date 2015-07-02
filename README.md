@@ -11,7 +11,7 @@ modifications are required for this script to work with
 Python 2.
 You have to:
 - adapt the she-bang;
-- add `from future import print_function` at the very beginning
+- add `from __future__ import print_function` at the very beginning
 of the script;
 - rename the `configparser` module to `ConfigParser`;
 - rename the `ConfigParser()` function to `SafeConfigParser()`.
@@ -31,7 +31,7 @@ to do
 
 ## TODO
 
-This is a list of features I want to add soon.
+This is a list of features I want to add soon, non sorted at all.
 
 an installation script
 

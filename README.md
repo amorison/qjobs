@@ -18,12 +18,17 @@ of the script;
 
 ## installation
 
-Put `qjobs` in a directory of your choice (you might want to put it in
-a directory which is in your PATH environment variable).
+Allow execution of `install.sh` with the command `chmod +x install.sh`.
 
-Put `qjobs.rc` (config file) in `~/.config/qjobs/qjobs.rc`
+If needed, change the directory where the script and/or the config file are
+copied. By default, the script `qjobs` is copied in `~/bin` and the config file
+is `~/.config/qjobs/qjobs.rc`. Please use the `$HOME` variable instead of `~` if
+you change these locations.
 
-That's it!
+Run the installation script with `./install.sh`.
+
+That's it! If `~/bin` (or the location you choose) is in the PATH environment
+variable, you only have to type `qjobs` to launch the wrapper.
 
 ## documentation/examples
 

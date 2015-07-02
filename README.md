@@ -20,10 +20,11 @@ of the script;
 
 Allow execution of `install.sh` with the command `chmod +x install.sh`.
 
-If needed, change the directory where the script and/or the config file are
-copied. By default, the script `qjobs` is copied in `~/bin` and the config file
-is `~/.config/qjobs/qjobs.rc`. Please use the `$HOME` variable instead of `~` if
-you change these locations.
+If needed, edit the script to change the directory where the script and/or the
+config file are copied. By default, the script `qjobs` is copied in `~/bin`
+(variable `pathScript`). The config file is copied in `~/.config/qjobs` (variable
+`pathConfig`) and if named `qjobs.rc` (variable `configFile`).
+Please use the `$HOME` variable instead of `~` if you change these locations.
 
 Run the installation script with `./install.sh`.
 
@@ -38,8 +39,6 @@ to do
 
 This is a list of features I want to add soon, non sorted at all.
 
-an installation script
-
 --sep (-p) to change separator (with '   ' default value)
 
 -s --sort sort by sort with key lambda x: x[args.sort], have to be in iunostql (which should be a constant)...
@@ -48,6 +47,7 @@ an installation script
 (these two (only g btw) should depend on whether -d is active or not < already OK)
 
 -t --total totals (-o should accept empty string (nargs='\*'), or need a commutator, like -m, to mute)
+
 -v --verbose verbose option to display all fields
 
 -O --format\_out with more advanced formatting

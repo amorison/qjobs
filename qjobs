@@ -4,6 +4,8 @@ import argparse
 import configparser
 import xml.etree.ElementTree as ET
 
+infos = 'ipnostql'
+
 parser = argparse.ArgumentParser(\
         description='qstat wrapper for better output',add_help=False)
 parser.add_argument('-c','--config',\
@@ -16,18 +18,18 @@ try:
     conf_parser.read(args.config)
     defaults = dict(conf_parser.items('Defaults'))
 except:
-    defaults = {'out':'instqT'}
+    defaults = {'out':'instq'}
 
 parser = argparse.ArgumentParser(parents=[parser])
-parser.add_argument('-o','--out',\
-        help="""specify output format (default instqT):
+parser.add_argument('-o','--out',nargs='*',\
+        help="""specify output format (default instq):
         i: job id,     p: job prior,  n: job name,
         o: job owner,  s: job state,  t: start/sub time,
-        q: queue,      l: slots,      T: total by state.""")
+        q: queue,      l: slots.""")
 parser.add_argument('-d','--domain',action='store_true',\
         help='display queue domain')
-parser.add_argument('-t','--total',action='store_true',\
-        help='only total is displayed (same as `-o T`)')
+parser.add_argument('-t','--total',nargs='*',\
+        help='display total number of jobs and their distribution')
 parser.add_argument('-f','--file',type=argparse.FileType('r'),\
         help='use given xml file as input (for debug)')
 
@@ -39,18 +41,19 @@ if args.file:
 else:
     f = Popen('\qstat -u amorison -xml -r', shell=True, stdout=PIPE).stdout
 
-if args.total: args.out = ''
-
 columns = ''
-for c in args.out:
-    if c=='T': args.total = True
-    if c in 'ipnostql': columns +=c
+for c in ''.join(args.out):
+    if c in infos: columns += c
+
+totals = ''
+for c in ''.join(args.total):
+    if c in infos: totals += c
 
 jobsTree = ET.parse(f)
 jobsList = jobsTree.getroot().iter('job_list')
 
 alljobs = []
-bystate = {}
+jobCounts = {}
 
 for j in jobsList:
     job = {}
@@ -78,10 +81,12 @@ for j in jobsList:
     else:
         job['t'] = 'not set'
 
-    try:
-        bystate[job['s']] += 1
-    except KeyError:
-        bystate[job['s']] = 1
+    for c in totals:
+        if not c in jobCounts: jobCounts[c]={}
+        if job[c] in jobCounts[c]:
+            jobCounts[c][job[c]] += 1
+        else:
+            jobCounts[c][job[c]] = 1
 
     alljobs.append(job)
 
@@ -97,6 +102,8 @@ else:
         for job in alljobs:
             print(*(job[c].ljust(l[c]) for c in columns), sep='   ')
 
-    if args.total:
-        a = [('tot',len(alljobs))] + list(bystate.items())
-        print(*('{}: {}'.format(b,c) for b,c in a),sep='   ')
+    if totals:
+        print('tot: {}'.format(len(alljobs)))
+        for c in totals:
+            print(*('{}: {}'.format(k,v) for k,v in jobCounts[c].items()),\
+                    sep='   ')

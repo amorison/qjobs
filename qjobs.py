@@ -45,7 +45,7 @@ else:
     f = Popen('\qstat -u USER_NAME -xml -r', shell=True, stdout=PIPE).stdout
 
 columns = ''
-for c in ''.join(args.out):
+for c in args.out:
     if c in items: columns += c
 
 totals = ''

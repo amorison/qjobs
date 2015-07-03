@@ -4,7 +4,7 @@ import argparse
 import configparser
 import xml.etree.ElementTree as ET
 
-infos = 'ipnostql'
+items = 'ipnostqdQl'
 
 parser = argparse.ArgumentParser(\
         description='qstat wrapper for better output',add_help=False)
@@ -26,8 +26,6 @@ parser.add_argument('-o','--out',nargs='*',\
         i: job id,     p: job prior,  n: job name,
         o: job owner,  s: job state,  t: start/sub time,
         q: queue,      l: slots.""")
-parser.add_argument('-d','--domain',action='store_true',\
-        help='display queue domain')
 parser.add_argument('-t','--total',nargs='*',\
         help='display total number of jobs and their distribution')
 parser.add_argument('-f','--file',type=argparse.FileType('r'),\
@@ -43,11 +41,11 @@ else:
 
 columns = ''
 for c in ''.join(args.out):
-    if c in infos: columns += c
+    if c in items: columns += c
 
 totals = ''
 for c in ''.join(args.total):
-    if c in infos: totals += c
+    if c in items: totals += c
 
 jobsTree = ET.parse(f)
 jobsList = jobsTree.getroot().iter('job_list')
@@ -63,12 +61,13 @@ for j in jobsList:
     job['o'] = j.find('JB_owner').text
     job['s'] = j.find('state').text
     job['q'] = ''
+    job['d'] = ''
+    job['Q'] = ''
     job['l'] = j.find('slots').text
     if job['s']=='r' :
         job['t'] = j.find('JAT_start_time').text
-        job['q'] = j.find('queue_name').text
-        if not args.domain:
-            job['q'] = job['q'].rsplit('@')[0]
+        job['Q'] = j.find('queue_name').text
+        job['q'], job['d'] = job['Q'].rsplit('@')
     elif job['s'] in ['dt','dr'] :
         job['t'] = j.find('JAT_start_time').text
     else:

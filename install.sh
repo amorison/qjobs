@@ -11,7 +11,7 @@ pythonVersion=0
 # DO NOT change anything under this line unless you know what you are doing #
 #############################################################################
 
-\cp qjobs qjobs_tmp
+\cp qjobs.py qjobs_tmp
 
 echo 'Looking for Python...'
 

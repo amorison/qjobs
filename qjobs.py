@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!PYTHON_CMD
 from subprocess import Popen, PIPE
 import argparse
 import configparser
@@ -9,7 +9,7 @@ infos = 'ipnostql'
 parser = argparse.ArgumentParser(\
         description='qstat wrapper for better output',add_help=False)
 parser.add_argument('-c','--config',\
-        default='RUN_INSTALL',\
+        default='PATH_CONFIG',\
         help='specify config file',metavar='FILE')
 
 args, remaining_argv = parser.parse_known_args()
@@ -18,7 +18,7 @@ try:
     conf_parser.read(args.config)
     defaults = dict(conf_parser.items('Defaults'))
 except:
-    defaults = {'out':'instq'}
+    defaults = {'out':'instq','total':'s'}
 
 parser = argparse.ArgumentParser(parents=[parser])
 parser.add_argument('-o','--out',nargs='*',\
@@ -39,7 +39,7 @@ args = parser.parse_args(remaining_argv)
 if args.file:
     f = args.file
 else:
-    f = Popen('\qstat -u amorison -xml -r', shell=True, stdout=PIPE).stdout
+    f = Popen('\qstat -u USER_NAME -xml -r', shell=True, stdout=PIPE).stdout
 
 columns = ''
 for c in ''.join(args.out):

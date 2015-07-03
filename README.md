@@ -2,45 +2,57 @@
 
 qstat wrapper
 
-## compatibility
+## Compatibility
 
 qjobs only uses built-in Python modules.
 
-qjobs is developed with Python 3, but only minor
-modifications are required for this script to work with
-Python 2.
-You have to:
-- adapt the she-bang;
-- add `from __future__ import print_function` at the very beginning
-of the script;
-- rename the `configparser` module to `ConfigParser`;
-- rename the `ConfigParser()` function to `SafeConfigParser()`.
+qjobs is developed with Python 3, but only minor modifications are required for
+this script to work with Python 2. If needed, these modifications are
+automatically made by the `install.sh` script.
 
-## installation
+## Installation
 
-Allow execution of `install.sh` with the command `chmod +x install.sh`.
+- Allow execution of `install.sh` with the command `chmod u+x install.sh`.
+- Run the installation script with `./install.sh`.
+- That's it! If `~/bin` is in your PATH environment variable, you only have to
+  type `qjobs` to launch the wrapper. Enjoy!
 
-If needed, edit the script to change the directory where the script and/or the
-config file are copied. By default, the script `qjobs` is copied in `~/bin`
-(variable `pathScript`). The config file is copied in `~/.config/qjobs` (variable
-`pathConfig`) and if named `qjobs.rc` (variable `configFile`).
-Please use the `$HOME` variable instead of `~` if you change these locations.
+You can customize the installation process by editing the first lines of the
+script before running it.
 
-Run the installation script with `./install.sh`.
+The variable `pathScript` is the directory where the executable will be copied.
+Its default value is `$HOME'/bin'`. You may want to choose a directory which is
+in your path.
 
-That's it! If `~/bin` (or the location you choose) is in the PATH environment
-variable, you only have to type `qjobs` to launch the wrapper.
+The variable `scriptFile` is the name of the script after installation. Its
+default value is `'qjobs'`. Hence, if `pathScript` is in your path, you will
+only need to type `qjobs` to launch the program.
 
-## documentation/examples
+The variable `pathConfig` is the name of the directory where the config file
+will be copied. Its default value is `$HOME'/.config/qjobs'`.
+
+The variable `configFile` is the name of the copied config file. Its default
+value is `'qjobs.rc'`.
+
+Finally, you can also force the location of the Python interpretor with the
+`pythonCmd` and `pythonVersion` variables. For example, if you have a fancy
+Python 2 interpretor located in `/opt/bin/myPython`, you could force its use
+by setting `pythonCmd='/opt/bin/myPython'` and `pythonVersion=2`. In most
+cases, you don't need to bother with these variables as the installation script
+will look for a Python interpretor in your path (and adapt the script to Python
+2 if needed).
+
+Please use the `$HOME` variable instead of `~` if you change any of these
+locations.  They are expanded and pasted in the installed script, which would
+not be possible with the `~` symbol.
+
+## Documentation and examples
 
 to do
 
 ## TODO
 
 This is a list of features I want to add soon, non sorted at all.
-
-install script should not modify local copy of qjobs, and have to add the possibility of
-changing name
 
 total output is ugly
 

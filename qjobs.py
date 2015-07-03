@@ -3,6 +3,7 @@ from subprocess import Popen, PIPE
 import argparse
 import configparser
 import xml.etree.ElementTree as ET
+import textwrap
 
 items = 'ipnostqdQl'
 
@@ -18,18 +19,22 @@ try:
     conf_parser.read(args.config)
     defaults = dict(conf_parser.items('Defaults'))
 except:
-    defaults = {'out':'instq','total':'s'}
+    defaults = {'out':'instq','total':'s','width_tot':120,'sep_tot':5}
 
 parser = argparse.ArgumentParser(parents=[parser])
-parser.add_argument('-o','--out',nargs='*',\
+parser.add_argument('-o','--out',nargs='?',const='',\
         help="""specify output format (default instq):
         i: job id,     p: job prior,  n: job name,
         o: job owner,  s: job state,  t: start/sub time,
         q: queue,      l: slots.""")
-parser.add_argument('-t','--total',nargs='*',\
+parser.add_argument('-t','--total',nargs='?',const='',\
         help='display total number of jobs and their distribution')
 parser.add_argument('-f','--file',type=argparse.FileType('r'),\
         help='use given xml file as input (for debug)')
+parser.add_argument('--width_tot',type=int,\
+        help='max width for `total` columns')
+parser.add_argument('--sep_tot',type=int,\
+        help='number of spaces between `total` columns')
 
 parser.set_defaults(**defaults)
 args = parser.parse_args(remaining_argv)
@@ -44,7 +49,7 @@ for c in ''.join(args.out):
     if c in items: columns += c
 
 totals = ''
-for c in ''.join(args.total):
+for c in args.total:
     if c in items: totals += c
 
 jobsTree = ET.parse(f)
@@ -102,7 +107,21 @@ else:
             print(*(job[c].ljust(l[c]) for c in columns), sep='   ')
 
     if totals:
-        print('tot: {}'.format(len(alljobs)))
+        print('tot: {}'.format(len(alljobs)),end='\n\n')
         for c in totals:
-            print(*('{}: {}'.format(k,v) for k,v in jobCounts[c].items()),\
-                    sep='   ')
+            dc = jobCounts[c]
+            if '' in dc:
+                dc['not set'] = dc.pop('')
+            dc = jobCounts[c].items()
+            lk = max(len(k) for k,_ in dc)
+            lv = max(len(str(v)) for _,v in dc)
+            sp = ' '*args.sep_tot
+            wd = args.width_tot
+            nf = (wd+len(sp))//(lk+lv+2+len(sp))
+            if nf == 0: nf = 1
+
+            txt = sp.join('{}: {}'.format(k.ljust(lk),str(v).rjust(lv))\
+                    for k,v in dc)
+
+            print(*textwrap.wrap(txt,width=nf*(lk+lv+2+len(sp))-len(sp)),\
+                    sep='\n',end='\n\n')

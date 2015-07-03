@@ -1,3 +1,5 @@
 [Defaults]
-out='instq'
-total='s'
+out=instq
+total=s
+width_tot=120
+sep_tot=5

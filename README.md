@@ -12,10 +12,14 @@ automatically made by the `install.sh` script.
 
 ## Installation
 
+### Quick installation
+
 - Allow execution of `install.sh` with the command `chmod u+x install.sh`.
 - Run the installation script with `./install.sh`.
 - That's it! If `~/bin` is in your PATH environment variable, you only have to
   type `qjobs` to launch the wrapper. Enjoy!
+
+### Customization
 
 You can customize the installation process by editing the first lines of the
 script before running it.
@@ -58,17 +62,14 @@ total output is ugly
 
 --sep (-p) to change separator (with '   ' default value)
 
--s --sort sort by sort with key lambda x: x[args.sort], have to be in iunostql (which should be a constant)...
+-s --sort sort by sort with key lambda x: x[args.sort], have to be in items
 
 -g --group group by (many levels, sorted at each group level, regex name(?))
-(these two (only g btw) should depend on whether -d is active or not < already OK)
 
 -v --verbose verbose option to display all fields
 
 -O --format\_out with more advanced formatting
 
--u --user user1,user2
-
 r requested queues
 
-d time difference (datetime module)
+e time difference (datetime module)

@@ -37,6 +37,7 @@ except:
             'total':'s',
             'width_tot':120,
             'sep_tot':5,
+            'sep':3,
             'users':'USER_NAME'}
 
 parser = argparse.ArgumentParser(parents=[parser])
@@ -51,6 +52,8 @@ parser.add_argument('-u','--users',nargs='?',const='*',\
         commas to separate usernames, empty list will list jobs of all users')
 parser.add_argument('-f','--file',type=argparse.FileType('r'),\
         help='use given xml file as input (for debug)')
+parser.add_argument('--sep',type=int,metavar='INT',\
+        help='number of spaces between `out` columns')
 parser.add_argument('--width_tot',type=int,metavar='INT',\
         help='max width for `total` columns')
 parser.add_argument('--sep_tot',type=int,metavar='INT',\
@@ -129,7 +132,7 @@ else:
             l[c] = max(len(job[c]) for job in alljobs)
 
         for job in alljobs:
-            print(*(job[c].ljust(l[c]) for c in columns), sep='   ')
+            print(*(job[c].ljust(l[c]) for c in columns), sep=' '*args.sep)
 
     if totals:
         print('tot: {}'.format(len(alljobs)),end='\n\n')

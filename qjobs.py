@@ -32,20 +32,28 @@ try:
     conf_parser.read(args.config)
     defaults = dict(conf_parser.items('Defaults'))
 except:
-    defaults = {'out':'instq','total':'s','width_tot':120,'sep_tot':5}
+    defaults = {\
+            'out':'instq',
+            'total':'s',
+            'width_tot':120,
+            'sep_tot':5,
+            'users':'USER_NAME'}
 
 parser = argparse.ArgumentParser(parents=[parser])
+parser.add_argument('-i','--items',action='store_true',\
+        help='display descriptions of items and exit')
 parser.add_argument('-o','--out',nargs='?',const='',metavar='ITEMS',\
         help='specify which items are displayed.')
 parser.add_argument('-t','--total',nargs='?',const='',metavar='ITEMS',\
         help='specify items for which you want to count the jobs.')
+parser.add_argument('-u','--users',nargs='?',const'*',\
+        metavar='USR1,USR2,...',help='specify list of users, use \
+        commas to separate usernames, empty list will list jobs of all users')
 parser.add_argument('-f','--file',type=argparse.FileType('r'),\
         help='use given xml file as input (for debug)')
-parser.add_argument('-i','--items',action='store_true',\
-        help='display descriptions of items and exit')
-parser.add_argument('--width_tot',type=int,\
+parser.add_argument('--width_tot',type=int,metavar='INT',\
         help='max width for `total` columns')
-parser.add_argument('--sep_tot',type=int,\
+parser.add_argument('--sep_tot',type=int,metavar='INT',\
         help='number of spaces between `total` columns')
 
 parser.set_defaults(**defaults)
@@ -58,7 +66,8 @@ if args.items:
 if args.file:
     f = args.file
 else:
-    f = Popen('\qstat -u USER_NAME -xml -r', shell=True, stdout=PIPE).stdout
+    f = Popen('\qstat -u "'+args.users+'" -xml -r',\
+            shell=True, stdout=PIPE).stdout
 
 columns = ''
 for c in args.out:

@@ -12,6 +12,7 @@ pythonVersion=0
 #############################################################################
 
 \cp qjobs.py qjobs_tmp
+\cp qjobs.rc rc_tmp
 
 echo 'Looking for Python...'
 
@@ -54,6 +55,7 @@ pathConfig=$pathConfig'/'$configFile
 \sed -i 's!PYTHON_CMD!'$pythonCmd'!' qjobs_tmp
 \sed -i 's!PATH_CONFIG!'$pathConfig'!' qjobs_tmp
 \sed -i 's/USER_NAME/'$USER'/' qjobs_tmp
+\sed -i 's/USER_NAME/'$USER'/' rc_tmp
 
 echo 'user name found: '$USER
 
@@ -65,7 +67,7 @@ echo 'qjobs will be installed at '$pathScript' ...'
 echo '...done.'
 
 echo 'config file will be copied at '$pathConfig' ...'
-\cp qjobs.rc $pathConfig
+\mv rc_tmp $pathConfig
 echo '...done.'
 
 echo ''

@@ -1,14 +1,27 @@
 #!PYTHON_CMD
 from subprocess import Popen, PIPE
+import sys
 import argparse
 import configparser
 import xml.etree.ElementTree as ET
 import textwrap
 
 items = 'ipnostqdQl'
+items_description = [\
+        ('i', 'job id'),
+        ('p', 'job priority'),
+        ('n', 'job name'),
+        ('o', 'job owner'),
+        ('s', 'job state'),
+        ('t', 'job start/submission time'),
+        ('q', 'queue name without domain'),
+        ('d', 'queue domain'),
+        ('Q', 'queue name with domain'),
+        ('l', 'number of slots used')]
 
 parser = argparse.ArgumentParser(\
-        description='qstat wrapper for better output',add_help=False)
+        description='qstat wrapper for better output. Available ITEMS are "'+\
+        items+'" see -i option for their description.',add_help=False)
 parser.add_argument('-c','--config',\
         default='PATH_CONFIG',\
         help='specify config file',metavar='FILE')
@@ -22,15 +35,14 @@ except:
     defaults = {'out':'instq','total':'s','width_tot':120,'sep_tot':5}
 
 parser = argparse.ArgumentParser(parents=[parser])
-parser.add_argument('-o','--out',nargs='?',const='',\
-        help="""specify output format (default instq):
-        i: job id,     p: job prior,  n: job name,
-        o: job owner,  s: job state,  t: start/sub time,
-        q: queue,      l: slots.""")
-parser.add_argument('-t','--total',nargs='?',const='',\
-        help='display total number of jobs and their distribution')
+parser.add_argument('-o','--out',nargs='?',const='',metavar='ITEMS',\
+        help='specify which items are displayed.')
+parser.add_argument('-t','--total',nargs='?',const='',metavar='ITEMS',\
+        help='specify items for which you want to count the jobs.')
 parser.add_argument('-f','--file',type=argparse.FileType('r'),\
         help='use given xml file as input (for debug)')
+parser.add_argument('-i','--items',action='store_true',\
+        help='display descriptions of items and exit')
 parser.add_argument('--width_tot',type=int,\
         help='max width for `total` columns')
 parser.add_argument('--sep_tot',type=int,\
@@ -38,6 +50,10 @@ parser.add_argument('--sep_tot',type=int,\
 
 parser.set_defaults(**defaults)
 args = parser.parse_args(remaining_argv)
+
+if args.items:
+    print(*('{}: {}'.format(k,v) for k,v in items_description),sep='\n')
+    sys.exit()
 
 if args.file:
     f = args.file

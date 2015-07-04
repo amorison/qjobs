@@ -46,7 +46,7 @@ parser.add_argument('-o','--out',nargs='?',const='',metavar='ITEMS',\
         help='specify which items are displayed.')
 parser.add_argument('-t','--total',nargs='?',const='',metavar='ITEMS',\
         help='specify items for which you want to count the jobs.')
-parser.add_argument('-u','--users',nargs='?',const'*',\
+parser.add_argument('-u','--users',nargs='?',const='*',\
         metavar='USR1,USR2,...',help='specify list of users, use \
         commas to separate usernames, empty list will list jobs of all users')
 parser.add_argument('-f','--file',type=argparse.FileType('r'),\

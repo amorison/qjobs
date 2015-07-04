@@ -11,8 +11,7 @@ pythonVersion=0
 # DO NOT change anything under this line unless you know what you are doing #
 #############################################################################
 
-\cp qjobs.py qjobs_tmp
-\cp qjobs.rc rc_tmp
+\cp qjobs.py qjobs_tmp.py
 
 echo 'Looking for Python...'
 
@@ -38,9 +37,9 @@ fi
 echo 'Python '$pythonVersion' found at '$pythonCmd
 
 if [ "$pythonVersion" -eq "2" ]; then
-    \sed -i '1 a from __future__ import print_function' qjobs_tmp
-    \sed -i 's/import configparser/import ConfigParser as configparser/' qjobs_tmp
-    \sed -i 's/ConfigParser()/SafeConfigParser()/' qjobs_tmp
+    \sed -i '1 a from __future__ import print_function' qjobs_tmp.py
+    \sed -i 's/import configparser/import ConfigParser as configparser/' qjobs_tmp.py
+    \sed -i 's/ConfigParser()/SafeConfigParser()/' qjobs_tmp.py
     echo 'script modified for compatibility'
 fi
 
@@ -52,21 +51,25 @@ echo ''
 pathScript=$pathScript'/'$scriptFile
 pathConfig=$pathConfig'/'$configFile
 
-\sed -i 's!PYTHON_CMD!'$pythonCmd'!' qjobs_tmp
-\sed -i 's!PATH_CONFIG!'$pathConfig'!' qjobs_tmp
-\sed -i 's/USER_NAME/'$USER'/' qjobs_tmp
-\sed -i 's/USER_NAME/'$USER'/' rc_tmp
+\sed -i 's!PYTHON_CMD!'$pythonCmd'!' qjobs_tmp.py
+\sed -i 's!PATH_CONFIG!'$pathConfig'!' qjobs_tmp.py
+\sed -i 's/USER_NAME/'$USER'/' qjobs_tmp.py
 
 echo 'user name found: '$USER
 
 echo ''
 
-\chmod u+x qjobs_tmp
-echo 'qjobs will be installed at '$pathScript' ...'
-\mv qjobs_tmp $pathScript
+$pythonCmd make_rc.py
+
+echo 'config file created:'
+\cat rc_tmp
+
+\chmod u+x qjobs_tmp.py
+echo 'qjobs will be installed as '$pathScript' ...'
+\mv qjobs_tmp.py $pathScript
 echo '...done.'
 
-echo 'config file will be copied at '$pathConfig' ...'
+echo 'config file will be moved to '$pathConfig' ...'
 \mv rc_tmp $pathConfig
 echo '...done.'
 

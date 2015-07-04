@@ -1,5 +1,5 @@
 #!PYTHON_CMD
-import configparser
+from configparser import ConfigParser as CP
 
 items = 'ipnostqdQl'
 items_description = [\
@@ -33,7 +33,7 @@ def parse_args():
 
     args, remaining_argv = parser.parse_known_args()
     try: 
-        conf_parser = configparser.ConfigParser()
+        conf_parser = CP()
         conf_parser.read(args.config)
         defaults = dict(conf_parser.items('Defaults'))
     except:

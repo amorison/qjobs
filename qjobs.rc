@@ -1,7 +1,0 @@
-[Defaults]
-out=instq
-total=s
-width_tot=120
-sep_tot=5
-sep=3
-users=USER_NAME

@@ -1,35 +1,41 @@
 #!PYTHON_CMD
-from configparser import ConfigParser as CP
+"""qjobs is a qstat wrapper designed to get a better output."""
+
+from configparser import ConfigParser as config_parser
+from configparser import NoSectionError
 
 items = 'ipnostqdQl'
 items_description = [
-        ('i', 'job id'),
-        ('p', 'job priority'),
-        ('n', 'job name'),
-        ('o', 'job owner'),
-        ('s', 'job state'),
-        ('t', 'job start/submission time'),
-        ('q', 'queue name without domain'),
-        ('d', 'queue domain'),
-        ('Q', 'queue name with domain'),
-        ('l', 'number of slots used')]
+    ('i', 'job id'),
+    ('p', 'job priority'),
+    ('n', 'job name'),
+    ('o', 'job owner'),
+    ('s', 'job state'),
+    ('t', 'job start/submission time'),
+    ('q', 'queue name without domain'),
+    ('d', 'queue domain'),
+    ('Q', 'queue name with domain'),
+    ('l', 'number of slots used')]
 default_config = {
-        'out': 'instq',
-        'total': 's',
-        'sort': 'ips',
-        'width_tot': 120,
-        'sep_tot': 5,
-        'sep': 3,
-        'users': 'USER_NAME'}
+    'out': 'instq',
+    'total': 's',
+    'sort': 'ips',
+    'width_tot': 120,
+    'sep_tot': 5,
+    'sep': 3,
+    'users': 'USER_NAME'}
 reversed_items = 'psl'
 
 
 def parse_args():
+    """parse arguments given in command line and fetch
+    default config from config file."""
+
     import argparse
     parser = argparse.ArgumentParser(
-            description='qstat wrapper for better output. \
+        description='qstat wrapper for better output. \
             Available ITEMS are "' + items +
-            '" see -i option for their description.', add_help=False)
+        '" see -i option for their description.', add_help=False)
     parser.add_argument('-c', '--config',
                         default='PATH_CONFIG',
                         metavar='FILE',
@@ -37,10 +43,10 @@ def parse_args():
 
     args, remaining_argv = parser.parse_known_args()
     try:
-        conf_parser = CP()
+        conf_parser = config_parser()
         conf_parser.read(args.config)
         defaults = dict(conf_parser.items('Defaults'))
-    except:
+    except NoSectionError:
         print('Cannot read config file, run install.sh script')
         defaults = default_config
 
@@ -74,6 +80,8 @@ def parse_args():
 
 
 def main():
+    """execute qstat and produces output according to chosen options."""
+
     from itertools import zip_longest as ziplgst
     from math import ceil
     from subprocess import Popen, PIPE
@@ -87,28 +95,27 @@ def main():
         sys.exit()
 
     if args.file:
-        f = args.file
+        qstat_out = args.file
     else:
-        f = Popen('\qstat -u "' + args.users + '" -xml -r',
-                  shell=True, stdout=PIPE).stdout
+        qstat_out = Popen('command qstat -u "' + args.users + '" -xml -r',
+                          shell=True, stdout=PIPE).stdout
 
     columns = ''
-    for c in args.out:
-        if c in items:
-            columns += c
+    for itm in args.out:
+        if itm in items:
+            columns += itm
 
     totals = ''
-    for c in args.total:
-        if c.lower() in items:
-            totals += c
+    for itm in args.total:
+        if itm.lower() in items:
+            totals += itm
 
-    jobsTree = ET.parse(f)
-    jobsList = jobsTree.getroot().iter('job_list')
+    jobs_list = ET.parse(qstat_out).getroot().iter('job_list')
 
     alljobs = []
-    jobCounts = {}
+    job_counter = {}
 
-    for j in jobsList:
+    for j in jobs_list:
         job = {}
         job['i'] = j.find('JB_job_number').text
         job['p'] = j.find('JAT_prio').text
@@ -135,13 +142,13 @@ def main():
         else:
             job['t'] = 'not set'
 
-        for c in totals.lower():
-            if c not in jobCounts:
-                jobCounts[c] = {}
-            if job[c] in jobCounts[c]:
-                jobCounts[c][job[c]] += 1
+        for itm in totals.lower():
+            if itm not in job_counter:
+                job_counter[itm] = {}
+            if job[itm] in job_counter[itm]:
+                job_counter[itm][job[itm]] += 1
             else:
-                jobCounts[c][job[c]] = 1
+                job_counter[itm][job[itm]] = 1
 
         alljobs.append(job)
 
@@ -149,50 +156,50 @@ def main():
         print('No pending or running job.')
     else:
         if columns:
-            for c in args.sort:
-                if c in items:
-                    alljobs.sort(key=lambda job: job[c],
-                                 reverse=(c in reversed_items))
-            l = {}
-            for c in columns:
-                l[c] = max(len(job[c]) for job in alljobs)
+            for itm in args.sort:
+                if itm in items:
+                    alljobs.sort(key=lambda job: job[itm],
+                                 reverse=(itm in reversed_items))
+            mlitm = {}
+            for itm in columns:
+                mlitm[itm] = max(len(job[itm]) for job in alljobs)
 
             for job in alljobs:
-                print(*(job[c].ljust(l[c]) for c in columns),
+                print(*(job[itm].ljust(mlitm[itm]) for itm in columns),
                       sep=' '*args.sep)
             if totals:
                 print()
 
         if totals:
             print('tot: {}'.format(len(alljobs)))
-            for c in totals:
+            for itm in totals:
                 order_by_keys = 0
-                if c.isupper():
+                if itm.isupper():
                     order_by_keys = 1
-                    c = c.lower()
-                dc = jobCounts[c]
-                if '' in dc:
-                    dc['not set'] = dc.pop('')
-                dc = sorted(dc.items(),
-                            key=lambda x: x[order_by_keys],
-                            reverse=(c in reversed_items) or order_by_keys)
-                lk = max(len(k) for k, _ in dc)
-                lv = max(len(str(v)) for _, v in dc)
-                sp = ' '*args.sep_tot
-                wd = args.width_tot
-                nf = (wd+len(sp))//(lk+lv+2+len(sp))
-                if nf == 0:
-                    nf = 1
+                    itm = itm.lower()
+                dct = job_counter[itm]
+                if '' in dct:
+                    dct['not set'] = dct.pop('')
+                dct = sorted(dct.items(),
+                             key=lambda x: x[order_by_keys],
+                             reverse=(itm in reversed_items) or order_by_keys)
+                mlk = max(len(k) for k, _ in dct)
+                mlv = max(len(str(v)) for _, v in dct)
+                spr = ' '*args.sep_tot
+                wdt = args.width_tot
+                nfld = (wdt+len(spr))//(mlk+mlv+2+len(spr))
+                if nfld == 0:
+                    nfld = 1
 
-                dc = ziplgst(*(iter(dc), ) * int(ceil(len(dc)/nf)),
-                             fillvalue=(None, None))
-                dc = zip(*dc)
+                dct = ziplgst(*(iter(dct), ) * int(ceil(len(dct)/nfld)),
+                              fillvalue=(None, None))
+                dct = zip(*dct)
 
                 print()
-                for line in dc:
-                    print(*('{}: {}'.format(k.ljust(lk), str(v).rjust(lv))
-                          for k, v in line if (k, v) != (None, None)),
-                          sep=sp)
+                for line in dct:
+                    print(*('{}: {}'.format(k.ljust(mlk), str(v).rjust(mlv))
+                            for k, v in line if (k, v) != (None, None)),
+                          sep=spr)
 
 if __name__ == '__main__':
     main()

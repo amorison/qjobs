@@ -37,7 +37,7 @@ fi
 echo 'Python '$pythonVersion' found at '$pythonCmd
 
 if [ "$pythonVersion" -eq "2" ]; then
-    \sed -i '1 a from __future__ import print_function' qjobs_tmp.py
+    \sed -i '3 a from __future__ import print_function' qjobs_tmp.py
     \sed -i 's/ConfigParser/SafeConfigParser/' qjobs_tmp.py
     \sed -i 's/configparser/ConfigParser/' qjobs_tmp.py
     \sed -i 's/zip_longest/izip_longest/' qjobs_tmp.py

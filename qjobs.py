@@ -153,7 +153,7 @@ def main():
             if totals: print()
 
         if totals:
-            print('tot: {}'.format(len(alljobs)),end='\n\n')
+            print('tot: {}'.format(len(alljobs)))
             for c in totals:
                 order_by_keys = 0
                 if c.isupper():
@@ -175,8 +175,9 @@ def main():
                 txt = sp.join('{}: {}'.format(k.ljust(lk),str(v).rjust(lv))\
                         for k,v in dc)
 
+                print()
                 print(*textwrap.wrap(txt,width=nf*(lk+lv+2+len(sp))-len(sp)),\
-                        sep='\n',end='\n\n')
+                        sep='\n')
 
 if __name__ == '__main__':
     main()

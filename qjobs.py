@@ -68,9 +68,10 @@ def parse_args():
     return args
 
 def main():
+    from itertools import zip_longest as ziplgst
+    from math import ceil
     from subprocess import Popen, PIPE
     import sys
-    import textwrap
     import xml.etree.ElementTree as ET
 
     args = parse_args()
@@ -162,7 +163,7 @@ def main():
                 dc = jobCounts[c]
                 if '' in dc:
                     dc['not set'] = dc.pop('')
-                dc = sorted(jobCounts[c].items(),\
+                dc = sorted(dc.items(),\
                         key=lambda x: x[order_by_keys],\
                         reverse=(c in reversed_items) or order_by_keys)
                 lk = max(len(k) for k,_ in dc)
@@ -172,12 +173,14 @@ def main():
                 nf = (wd+len(sp))//(lk+lv+2+len(sp))
                 if nf == 0: nf = 1
 
-                txt = sp.join('{}: {}'.format(k.ljust(lk),str(v).rjust(lv))\
-                        for k,v in dc)
+                dc = ziplgst(*(iter(dc),) * int(ceil(len(dc)/nf)),\
+                        fillvalue=(None,None))
+                dc = zip(*dc)
 
                 print()
-                print(*textwrap.wrap(txt,width=nf*(lk+lv+2+len(sp))-len(sp)),\
-                        sep='\n')
+                for line in dc:
+                    print(*('{}: {}'.format(k.ljust(lk),str(v).rjust(lv))\
+                            for k,v in line if (k,v) != (None,None)),sep=sp)
 
 if __name__ == '__main__':
     main()

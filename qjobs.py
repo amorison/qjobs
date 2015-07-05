@@ -4,7 +4,7 @@
 from configparser import ConfigParser as config_parser
 from configparser import NoSectionError
 
-items = 'ipnostqdkl'
+items = 'ipnosteqdkl'
 items_description = [
     ('i', 'job id'),
     ('p', 'job priority'),
@@ -12,6 +12,7 @@ items_description = [
     ('o', 'job owner'),
     ('s', 'job state'),
     ('t', 'job start/submission time'),
+    ('e', 'elapsed time since start/submission'),
     ('q', 'queue name without domain'),
     ('d', 'queue domain'),
     ('k', 'queue name with domain'),
@@ -82,6 +83,7 @@ def parse_args():
 def main():
     """execute qstat and produces output according to chosen options."""
 
+    from datetime import datetime, timedelta
     from itertools import zip_longest as ziplgst
     from math import ceil
     from subprocess import Popen, PIPE
@@ -139,8 +141,13 @@ def main():
                 job['t'] = None
         if job['t']:
             job['t'] = job['t'].replace('T', ' ')
+            start_time = datetime.strptime(job['t'], '%Y-%m-%d %H:%M:%S')
+            delta = datetime.today() - start_time
+            job['e'] = str(timedelta(days=delta.days, seconds=delta.seconds,
+                                     microseconds=0))
         else:
             job['t'] = 'not set'
+            job['e'] = 'not set'
 
         for itm in totals.lower():
             if itm not in job_counter:

@@ -16,10 +16,12 @@ items_description = [\
 default_config = {\
         'out':'instq',
         'total':'s',
+        'sort':'ips',
         'width_tot':120,
         'sep_tot':5,
         'sep':3,
         'users':'USER_NAME'}
+reversed_items = 'psl'
 
 def parse_args():
     import argparse
@@ -47,6 +49,8 @@ def parse_args():
             help='specify which items are displayed.')
     parser.add_argument('-t','--total',nargs='?',const='',metavar='ITEMS',\
             help='specify items for which you want to count the jobs.')
+    parser.add_argument('-s','--sort',metavar='ITEMS',\
+            help='specify the items to use to sort the jobs')
     parser.add_argument('-u','--users',nargs='?',const='*',\
             metavar='USR1,USR2,...',help='specify list of users, use commas \
             to separate usernames, empty list will list jobs of all users')
@@ -135,6 +139,10 @@ def main():
         print('No pending or running job.')
     else:
         if columns:
+            for c in args.sort:
+                if c in items:
+                    alljobs.sort(key=lambda job: job[c],\
+                            reverse=(c in reversed_items))
             l = {}
             for c in columns:
                 l[c] = max(len(job[c]) for job in alljobs)
@@ -150,7 +158,8 @@ def main():
                 dc = jobCounts[c]
                 if '' in dc:
                     dc['not set'] = dc.pop('')
-                dc = jobCounts[c].items()
+                dc = sorted(jobCounts[c].items(),\
+                        reverse=(c in reversed_items))
                 lk = max(len(k) for k,_ in dc)
                 lv = max(len(str(v)) for _,v in dc)
                 sp = ' '*args.sep_tot

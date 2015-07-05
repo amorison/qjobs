@@ -58,8 +58,6 @@ to do
 
 This is a list of features I want to add soon, non sorted at all.
 
--s --sort sort by sort with key lambda x: x[args.sort], have to be in items
-
 -g --group group by (many levels, sorted at each group level, regex name(?))
 
 -v --verbose verbose option to display all fields

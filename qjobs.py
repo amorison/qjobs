@@ -4,7 +4,7 @@
 from configparser import ConfigParser as config_parser
 from configparser import NoSectionError
 
-items = 'ipnostqdQl'
+items = 'ipnostqdkl'
 items_description = [
     ('i', 'job id'),
     ('p', 'job priority'),
@@ -14,7 +14,7 @@ items_description = [
     ('t', 'job start/submission time'),
     ('q', 'queue name without domain'),
     ('d', 'queue domain'),
-    ('Q', 'queue name with domain'),
+    ('k', 'queue name with domain'),
     ('l', 'number of slots used')]
 default_config = {
     'out': 'instq',
@@ -124,12 +124,12 @@ def main():
         job['s'] = j.find('state').text
         job['q'] = ''
         job['d'] = ''
-        job['Q'] = ''
+        job['k'] = ''
         job['l'] = j.find('slots').text
         if job['s'] == 'r':
             job['t'] = j.find('JAT_start_time').text
-            job['Q'] = j.find('queue_name').text
-            job['q'], job['d'] = job['Q'].rsplit('@')
+            job['k'] = j.find('queue_name').text
+            job['q'], job['d'] = job['k'].rsplit('@')
         elif job['s'] in ['dt', 'dr']:
             job['t'] = j.find('JAT_start_time').text
         else:

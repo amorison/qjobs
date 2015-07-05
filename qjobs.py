@@ -4,7 +4,7 @@
 from configparser import ConfigParser as config_parser
 from configparser import NoSectionError
 
-items = 'ipnosteqdkl'
+items = 'ipnosteqdkrl'
 items_description = [
     ('i', 'job id'),
     ('p', 'job priority'),
@@ -16,6 +16,7 @@ items_description = [
     ('q', 'queue name without domain'),
     ('d', 'queue domain'),
     ('k', 'queue name with domain'),
+    ('r', 'requested queue(s)'),
     ('l', 'number of slots used')]
 default_config = {
     'out': 'instq',
@@ -148,6 +149,8 @@ def main():
         else:
             job['t'] = 'not set'
             job['e'] = 'not set'
+        req_list = j.iter('hard_req_queue')
+        job['r'] = ', '.join(sorted(req.text for req in req_list))
 
         for itm in totals.lower():
             if itm not in job_counter:

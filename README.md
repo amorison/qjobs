@@ -63,7 +63,3 @@ This is a list of features I want to add soon, non sorted at all.
 -v --verbose verbose option to display all fields
 
 -O --format\_out with more advanced formatting
-
-r requested queues
-
-e time difference (datetime module)

@@ -90,7 +90,7 @@ def main():
 
     totals = ''
     for c in args.total:
-        if c in items: totals += c
+        if c.lower() in items: totals += c
 
     jobsTree = ET.parse(f)
     jobsList = jobsTree.getroot().iter('job_list')
@@ -125,7 +125,7 @@ def main():
         else:
             job['t'] = 'not set'
 
-        for c in totals:
+        for c in totals.lower():
             if not c in jobCounts: jobCounts[c]={}
             if job[c] in jobCounts[c]:
                 jobCounts[c][job[c]] += 1
@@ -155,11 +155,16 @@ def main():
         if totals:
             print('tot: {}'.format(len(alljobs)),end='\n\n')
             for c in totals:
+                order_by_keys = 0
+                if c.isupper():
+                    order_by_keys = 1
+                    c = c.lower()
                 dc = jobCounts[c]
                 if '' in dc:
                     dc['not set'] = dc.pop('')
                 dc = sorted(jobCounts[c].items(),\
-                        reverse=(c in reversed_items))
+                        key=lambda x: x[order_by_keys],\
+                        reverse=(c in reversed_items) or order_by_keys)
                 lk = max(len(k) for k,_ in dc)
                 lv = max(len(str(v)) for _,v in dc)
                 sp = ' '*args.sep_tot

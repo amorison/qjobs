@@ -201,7 +201,7 @@ def main():
                 if nfld == 0:
                     nfld = 1
 
-                dct = ziplgst(*(iter(dct), ) * int(ceil(len(dct)/nfld)),
+                dct = ziplgst(*(iter(dct), ) * int(ceil(len(dct)/float(nfld))),
                               fillvalue=(None, None))
                 dct = zip(*dct)
 

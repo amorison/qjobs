@@ -3,21 +3,28 @@
 
 from configparser import ConfigParser as config_parser
 from configparser import NoSectionError
+from collections import OrderedDict, namedtuple
 
-items = 'ipnosteqdkrl'
-items_description = [
-    ('i', 'job id'),
-    ('p', 'job priority'),
-    ('n', 'job name'),
-    ('o', 'job owner'),
-    ('s', 'job state'),
-    ('t', 'job start/submission time'),
-    ('e', 'elapsed time since start/submission'),
-    ('q', 'queue name without domain'),
-    ('d', 'queue domain'),
-    ('k', 'queue name with domain'),
-    ('r', 'requested queue(s)'),
-    ('l', 'number of slots used')]
+Itmtp = namedtuple('Itmtp', ['dscr', 'xml_tag'])
+
+itms = OrderedDict((
+    ('i', Itmtp('job id', ['JB_job_number'])),
+    ('p', Itmtp('job priority', ['JAT_prio'])),
+    ('n', Itmtp('job name', ['JB_name'])),
+    ('o', Itmtp('job owner', ['JB_owner'])),
+    ('s', Itmtp('job state', ['state'])),
+    ('t', Itmtp('job start/submission time', ['JAT_start_time',
+                                              'JB_submission_time'])),
+    ('e', Itmtp('elapsed time since start/submission', [])),
+    ('q', Itmtp('queue name without domain', [])),
+    ('d', Itmtp('queue domain', [])),
+    ('k', Itmtp('queue name with domain', ['queue_name'])),
+    ('r', Itmtp('requested queue(s)', ['hard_req_queue'])),
+    ('l', Itmtp('number of slots used', ['slots']))
+    ))
+
+reversed_itms = 'psl'
+
 default_config = {
     'out': 'instq',
     'total': 's',
@@ -26,7 +33,6 @@ default_config = {
     'sep_tot': 5,
     'sep': 3,
     'users': 'USER_NAME'}
-reversed_items = 'psl'
 
 
 def parse_args():
@@ -36,7 +42,7 @@ def parse_args():
     import argparse
     parser = argparse.ArgumentParser(
         description='qstat wrapper for better output. \
-            Available ITEMS are "' + items +
+            Available ITEMS are "' + ''.join(itms.keys()) +
         '" see -i option for their description.', add_help=False)
     parser.add_argument('-c', '--config',
                         default='PATH_CONFIG',
@@ -78,40 +84,28 @@ def parse_args():
 
     parser.set_defaults(**defaults)
     args = parser.parse_args(remaining_argv)
-    return args
-
-
-def main():
-    """execute qstat and produces output according to chosen options."""
-
-    from datetime import datetime, timedelta
-    from itertools import zip_longest as ziplgst
-    from math import ceil
-    from subprocess import Popen, PIPE
-    import sys
-    import xml.etree.ElementTree as ET
-
-    args = parse_args()
-    if args.items:
-        print(*('{}: {}'.format(k, v) for k, v in items_description),
-              sep='\n')
-        sys.exit()
-
-    if args.file:
-        qstat_out = args.file
-    else:
-        qstat_out = Popen('command qstat -u "' + args.users + '" -xml -r',
-                          shell=True, stdout=PIPE).stdout
 
     columns = ''
     for itm in args.out:
-        if itm in items:
+        if itm in itms:
             columns += itm
+    args.out = columns
 
     totals = ''
     for itm in args.total:
-        if itm.lower() in items:
+        if itm.lower() in itms:
             totals += itm
+    args.total = totals
+
+    return args
+
+
+def get_itms(qstat_out, totals):
+    """extract data from xml job tree
+    and count totals"""
+
+    from datetime import datetime, timedelta
+    import xml.etree.ElementTree as ET
 
     jobs_list = ET.parse(qstat_out).getroot().iter('job_list')
 
@@ -120,26 +114,18 @@ def main():
 
     for j in jobs_list:
         job = {}
-        job['i'] = j.find('JB_job_number').text
-        job['p'] = j.find('JAT_prio').text
-        job['n'] = j.find('JB_name').text
-        job['o'] = j.find('JB_owner').text
-        job['s'] = j.find('state').text
-        job['q'] = ''
-        job['d'] = ''
-        job['k'] = ''
-        job['l'] = j.find('slots').text
-        if job['s'] == 'r':
-            job['t'] = j.find('JAT_start_time').text
-            job['k'] = j.find('queue_name').text
+        for itm, itmtp in itms.items():
+            job[itm] = ''
+            for tag in itmtp.xml_tag:
+                elts = j.iter(tag)
+                job[itm] = ', '.join(sorted(elt.text for elt in elts
+                                            if elt.text))
+                if job[itm]:
+                    break
+
+        if job['k']:
             job['q'], job['d'] = job['k'].rsplit('@')
-        elif job['s'] in ['dt', 'dr']:
-            job['t'] = j.find('JAT_start_time').text
-        else:
-            try:
-                job['t'] = j.find('JB_submission_time').text
-            except AttributeError:
-                job['t'] = None
+
         if job['t']:
             job['t'] = job['t'].replace('T', ' ')
             start_time = datetime.strptime(job['t'], '%Y-%m-%d %H:%M:%S')
@@ -149,8 +135,6 @@ def main():
         else:
             job['t'] = 'not set'
             job['e'] = 'not set'
-        req_list = j.iter('hard_req_queue')
-        job['r'] = ', '.join(sorted(req.text for req in req_list))
 
         for itm in totals.lower():
             if itm not in job_counter:
@@ -162,27 +146,52 @@ def main():
 
         alljobs.append(job)
 
+    return alljobs, job_counter
+
+
+def main():
+    """execute qstat and produces output according to chosen options."""
+
+    from itertools import zip_longest as ziplgst
+    from math import ceil
+    from subprocess import Popen, PIPE
+    import sys
+
+    args = parse_args()
+    if args.items:
+        print(*('{}: {}'.format(k, v.dscr) for k, v in itms.items()),
+              sep='\n')
+        sys.exit()
+
+    if args.file:
+        qstat_out = args.file
+    else:
+        qstat_out = Popen('command qstat -u "' + args.users + '" -xml -r',
+                          shell=True, stdout=PIPE).stdout
+
+    alljobs, job_counter = get_itms(qstat_out, args.total)
+
     if not alljobs:
         print('No pending or running job.')
     else:
-        if columns:
+        if args.out:
             for itm in args.sort:
-                if itm in items:
+                if itm in itms:
                     alljobs.sort(key=lambda job: job[itm],
-                                 reverse=(itm in reversed_items))
+                                 reverse=(itm in reversed_itms))
             mlitm = {}
-            for itm in columns:
+            for itm in args.out:
                 mlitm[itm] = max(len(job[itm]) for job in alljobs)
 
             for job in alljobs:
-                print(*(job[itm].ljust(mlitm[itm]) for itm in columns),
+                print(*(job[itm].ljust(mlitm[itm]) for itm in args.out),
                       sep=' '*args.sep)
-            if totals:
+            if args.total:
                 print()
 
-        if totals:
+        if args.total:
             print('tot: {}'.format(len(alljobs)))
-            for itm in totals:
+            for itm in args.total:
                 order_by_keys = 0
                 if itm.isupper():
                     order_by_keys = 1
@@ -192,7 +201,7 @@ def main():
                     dct['not set'] = dct.pop('')
                 dct = sorted(dct.items(),
                              key=lambda x: x[order_by_keys],
-                             reverse=(itm in reversed_items) or order_by_keys)
+                             reverse=(itm in reversed_itms) or order_by_keys)
                 mlk = max(len(k) for k, _ in dct)
                 mlv = max(len(str(v)) for _, v in dct)
                 spr = ' '*args.sep_tot

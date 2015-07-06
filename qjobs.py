@@ -128,8 +128,8 @@ def get_itms(qstat_out, totals):
 
         if job['t']:
             job['t'] = job['t'].replace('T', ' ')
-            start_time = datetime.strptime(job['t'], '%Y-%m-%d %H:%M:%S')
-            delta = datetime.today() - start_time
+            delta = datetime.today() -\
+                datetime.strptime(job['t'], '%Y-%m-%d %H:%M:%S')
             job['e'] = str(timedelta(days=delta.days, seconds=delta.seconds,
                                      microseconds=0))
         else:
@@ -149,11 +149,61 @@ def get_itms(qstat_out, totals):
     return alljobs, job_counter
 
 
-def main():
-    """execute qstat and produces output according to chosen options."""
+def print_jobs(alljobs, job_counter, args):
+    """produces ouput according to chosen options."""
 
     from itertools import zip_longest as ziplgst
     from math import ceil
+
+    if args.out:
+        for itm in args.sort:
+            if itm in itms:
+                alljobs.sort(key=lambda job: job[itm],
+                             reverse=(itm in reversed_itms))
+        mlitm = {}
+        for itm in args.out:
+            mlitm[itm] = max(len(job[itm]) for job in alljobs)
+
+        for job in alljobs:
+            print(*(job[itm].ljust(mlitm[itm]) for itm in args.out),
+                  sep=' '*args.sep)
+        if args.total:
+            print()
+
+    if args.total:
+        print('tot: {}'.format(len(alljobs)))
+        for itm in args.total:
+            order_by_keys = 0
+            if itm.isupper():
+                order_by_keys = 1
+                itm = itm.lower()
+            dct = job_counter[itm]
+            if '' in dct:
+                dct['not set'] = dct.pop('')
+            dct = sorted(dct.items(),
+                         key=lambda x: x[order_by_keys],
+                         reverse=(itm in reversed_itms) or order_by_keys)
+            mlk = max(len(k) for k, _ in dct)
+            mlv = max(len(str(v)) for _, v in dct)
+            spr = ' '*args.sep_tot
+            nfld = (args.width_tot+len(spr))//(mlk+mlv+2+len(spr))
+            if nfld == 0:
+                nfld = 1
+
+            dct = ziplgst(*(iter(dct), ) * int(ceil(len(dct)/float(nfld))),
+                          fillvalue=(None, None))
+            dct = zip(*dct)
+
+            print()
+            for line in dct:
+                print(*('{}: {}'.format(k.ljust(mlk), str(v).rjust(mlv))
+                        for k, v in line if (k, v) != (None, None)),
+                      sep=spr)
+
+
+def main():
+    """execute qstat and produces output according to chosen options."""
+
     from subprocess import Popen, PIPE
     import sys
 
@@ -174,51 +224,8 @@ def main():
     if not alljobs:
         print('No pending or running job.')
     else:
-        if args.out:
-            for itm in args.sort:
-                if itm in itms:
-                    alljobs.sort(key=lambda job: job[itm],
-                                 reverse=(itm in reversed_itms))
-            mlitm = {}
-            for itm in args.out:
-                mlitm[itm] = max(len(job[itm]) for job in alljobs)
+        print_jobs(alljobs, job_counter, args)
 
-            for job in alljobs:
-                print(*(job[itm].ljust(mlitm[itm]) for itm in args.out),
-                      sep=' '*args.sep)
-            if args.total:
-                print()
-
-        if args.total:
-            print('tot: {}'.format(len(alljobs)))
-            for itm in args.total:
-                order_by_keys = 0
-                if itm.isupper():
-                    order_by_keys = 1
-                    itm = itm.lower()
-                dct = job_counter[itm]
-                if '' in dct:
-                    dct['not set'] = dct.pop('')
-                dct = sorted(dct.items(),
-                             key=lambda x: x[order_by_keys],
-                             reverse=(itm in reversed_itms) or order_by_keys)
-                mlk = max(len(k) for k, _ in dct)
-                mlv = max(len(str(v)) for _, v in dct)
-                spr = ' '*args.sep_tot
-                wdt = args.width_tot
-                nfld = (wdt+len(spr))//(mlk+mlv+2+len(spr))
-                if nfld == 0:
-                    nfld = 1
-
-                dct = ziplgst(*(iter(dct), ) * int(ceil(len(dct)/float(nfld))),
-                              fillvalue=(None, None))
-                dct = zip(*dct)
-
-                print()
-                for line in dct:
-                    print(*('{}: {}'.format(k.ljust(mlk), str(v).rjust(mlv))
-                            for k, v in line if (k, v) != (None, None)),
-                          sep=spr)
 
 if __name__ == '__main__':
     main()

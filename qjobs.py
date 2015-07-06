@@ -216,7 +216,7 @@ def main():
     if args.file:
         qstat_out = args.file
     else:
-        qstat_out = Popen('command qstat -u "' + args.users + '" -xml -r',
+        qstat_out = Popen('QSTAT_CMD -u "' + args.users + '" -xml -r',
                           shell=True, stdout=PIPE).stdout
 
     alljobs, job_counter = get_itms(qstat_out, args.total)

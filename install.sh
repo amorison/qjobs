@@ -4,6 +4,7 @@ pathScript=$HOME'/bin'
 scriptFile='qjobs'
 pathConfig=$HOME'/.config/qjobs'
 configFile='qjobs.rc'
+qstatCmd=''
 pythonCmd=''
 pythonVersion=0
 
@@ -12,6 +13,20 @@ pythonVersion=0
 #############################################################################
 
 \cp qjobs.py qjobs_tmp.py
+
+if [ -z "$qstatCmd" ]; then
+    echo 'Looking for qstat...'
+    qstatCmd=`command -v qstat`
+    if [ -z "$qstatCmd" ]; then
+        echo 'qstat not found, please set qstatCmd variables.'
+        exit 1
+    fi
+    echo 'qstat found at '$qstatCmd
+else
+    echo 'qstat already set at '$qstatCmd
+fi
+
+echo ''
 
 echo 'Looking for Python...'
 
@@ -52,6 +67,7 @@ echo ''
 pathScript=$pathScript'/'$scriptFile
 pathConfig=$pathConfig'/'$configFile
 
+\sed -i 's!QSTAT_CMD!'$qstatCmd'!' qjobs_tmp.py
 \sed -i 's!PYTHON_CMD!'$pythonCmd'!' qjobs_tmp.py
 \sed -i 's!PATH_CONFIG!'$pathConfig'!' qjobs_tmp.py
 \sed -i 's/USER_NAME/'$USER'/' qjobs_tmp.py

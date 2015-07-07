@@ -98,6 +98,8 @@ def parse_args():
                         help='max width for `total` columns')
     parser.add_argument('--sep_tot', type=int, metavar='INT',
                         help='number of spaces between `total` columns')
+    parser.add_argument('--mute', action='store_true',
+                        help='no output if no jobs')
 
     parser.set_defaults(**defaults)
     args = parser.parse_args(remaining_argv)
@@ -240,7 +242,8 @@ def main():
     alljobs, job_counter = get_itms(qstat_out, args.total)
 
     if not alljobs:
-        print('No pending or running job.')
+        if not args.mute:
+            print('No pending or running job.')
     else:
         print_jobs(alljobs, job_counter, args)
 

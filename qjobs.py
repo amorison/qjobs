@@ -54,10 +54,14 @@ def parse_args():
     try:
         conf_parser = config_parser()
         conf_parser.read(args.config)
-        defaults = dict(conf_parser.items('Defaults'))
+        defaults = OrderedDict(conf_parser.items('Defaults'))
     except NoSectionError:
         print('Cannot read config file, run install.sh script')
-        defaults = default_config
+        defaults = OrderedDict()
+
+    for opt, val in default_config.items():
+        if opt not in defaults:
+            defaults[opt] = val
 
     parser = argparse.ArgumentParser(parents=[parser])
     parser.add_argument('-i', '--items', action='store_true',

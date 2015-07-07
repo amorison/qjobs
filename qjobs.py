@@ -40,6 +40,31 @@ default_config = OrderedDict((
     ))
 
 
+def read_config(args):
+    """read config file"""
+
+    from configparser import NoSectionError, MissingSectionHeaderError
+
+    config_file = args.config
+    if not config_file:
+        config_file = path_config
+
+    try:
+        conf_parser = config_parser()
+        conf_parser.read(config_file)
+        defaults = OrderedDict(conf_parser.items(dflt_section))
+    except (NoSectionError, MissingSectionHeaderError):
+        if args.config:
+            print('Cannot read config file! Run install script.')
+        defaults = OrderedDict()
+
+    for opt, val in default_config.items():
+        if opt not in defaults:
+            defaults[opt] = val
+
+    return defaults
+
+
 def write_config(args, out_stream):
     """write config file"""
 
@@ -60,7 +85,6 @@ def parse_args():
     default config from config file."""
 
     import argparse
-    from configparser import NoSectionError, MissingSectionHeaderError
 
     parser = argparse.ArgumentParser(
         description='qstat wrapper for better output. \
@@ -82,22 +106,8 @@ def parse_args():
         write_config(default_config, path_config)
         sys.exit()
 
-    config_file = args.config
-    if not config_file:
-        args.config = path_config
-
-    try:
-        conf_parser = config_parser()
-        conf_parser.read(args.config)
-        defaults = OrderedDict(conf_parser.items(dflt_section))
-    except (NoSectionError, MissingSectionHeaderError):
-        if config_file:
-            print('Cannot read config file! Run install script.')
-        defaults = OrderedDict()
-
-    for opt, val in default_config.items():
-        if opt not in defaults:
-            defaults[opt] = val
+    config_to_stdout = not args.config
+    defaults = read_config(args)
 
     parser = argparse.ArgumentParser(parents=[parser])
     parser.add_argument('-i', '--items', action='store_true',
@@ -135,7 +145,7 @@ def parse_args():
     args.total = ''.join((itm for itm in args.total
                           if itm.lower() in itms))
 
-    if not config_file:
+    if config_to_stdout:
         write_config(vars(args), sys.stdout)
         sys.exit()
 

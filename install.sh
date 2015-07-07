@@ -71,19 +71,19 @@ pathConfig=$pathConfig'/'$configFile
 \sed -i 's!PYTHON_CMD!'$pythonCmd'!' qjobs_tmp.py
 \sed -i 's!PATH_CONFIG!'$pathConfig'!' qjobs_tmp.py
 \sed -i 's/USER_NAME/'$USER'/' qjobs_tmp.py
+\chmod u+x qjobs_tmp.py
 
 echo 'user name found: '$USER
 
 echo ''
 
-$pythonCmd make_rc.py
+./qjobs_tmp.py -c > rc_tmp
 
 \rm -rf __pycache__ *.pyc
 
 echo 'config file created:'
 \cat rc_tmp
 
-\chmod u+x qjobs_tmp.py
 echo 'qjobs will be installed as '$pathScript' ...'
 \mv qjobs_tmp.py $pathScript
 echo '...done.'

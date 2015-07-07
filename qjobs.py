@@ -1,9 +1,8 @@
 #!PYTHON_CMD
 """qjobs is a qstat wrapper designed to get a better output."""
 
-from configparser import ConfigParser as config_parser
-from configparser import NoSectionError
 from collections import OrderedDict, namedtuple
+import sys
 
 Itmtp = namedtuple('Itmtp', ['dscr', 'xml_tag'])
 
@@ -41,22 +40,35 @@ def parse_args():
     default config from config file."""
 
     import argparse
+    from configparser import ConfigParser as config_parser
+    from configparser import NoSectionError, MissingSectionHeaderError
+
+    path_config = 'PATH_CONFIG'
     parser = argparse.ArgumentParser(
         description='qstat wrapper for better output. \
             Available ITEMS are "' + ''.join(itms.keys()) +
         '" see -i option for their description.', add_help=False)
     parser.add_argument('-c', '--config',
-                        default='PATH_CONFIG',
+                        nargs='?',
+                        const=None,
+                        default=path_config,
                         metavar='FILE',
-                        help='specify config file')
+                        help='specify config file, write current config \
+                              if called without argument')
 
     args, remaining_argv = parser.parse_known_args()
+
+    config_file = args.config
+    if not config_file:
+        args.config = path_config
+
     try:
         conf_parser = config_parser()
         conf_parser.read(args.config)
         defaults = OrderedDict(conf_parser.items('Defaults'))
-    except NoSectionError:
-        print('Cannot read config file, run install.sh script')
+    except (NoSectionError, MissingSectionHeaderError):
+        if config_file:
+            print('Cannot read config file! Run install script.')
         defaults = OrderedDict()
 
     for opt, val in default_config.items():
@@ -90,17 +102,19 @@ def parse_args():
     parser.set_defaults(**defaults)
     args = parser.parse_args(remaining_argv)
 
-    columns = ''
-    for itm in args.out:
-        if itm in itms:
-            columns += itm
-    args.out = columns
+    args.out = ''.join((itm for itm in args.out
+                        if itm in itms))
+    args.total = ''.join((itm for itm in args.total
+                          if itm.lower() in itms))
 
-    totals = ''
-    for itm in args.total:
-        if itm.lower() in itms:
-            totals += itm
-    args.total = totals
+    if not config_file:
+        args = vars(args)
+        config = config_parser()
+        config.add_section('Defaults')
+        for opt in default_config:
+            config.set('Defaults', opt, str(args[opt]))
+        config.write(sys.stdout)
+        sys.exit()
 
     return args
 
@@ -210,7 +224,6 @@ def main():
     """execute qstat and produces output according to chosen options."""
 
     from subprocess import Popen, PIPE
-    import sys
 
     args = parse_args()
     if args.items:

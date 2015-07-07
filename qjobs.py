@@ -1,6 +1,7 @@
 #!PYTHON_CMD
 """qjobs is a qstat wrapper designed to get a better output."""
 
+from configparser import ConfigParser as config_parser
 from collections import OrderedDict, namedtuple
 import sys
 
@@ -24,6 +25,9 @@ itms = OrderedDict((
 
 reversed_itms = 'psl'
 
+path_config = 'PATH_CONFIG'
+
+dflt_section = 'Defaults'
 default_config = OrderedDict((
     ('out', 'instq'),
     ('total', 's'),
@@ -35,15 +39,28 @@ default_config = OrderedDict((
     ))
 
 
+def write_config(args, out_stream):
+    """write config file"""
+
+    config = config_parser()
+    config.add_section(dflt_section)
+    for opt in default_config:
+        config.set(dflt_section, opt, str(args[opt]))
+
+    if out_stream is sys.stdout:
+        config.write(out_stream)
+    else:
+        with open(out_stream, 'w') as out_file:
+            config.write(out_file)
+
+
 def parse_args():
     """parse arguments given in command line and fetch
     default config from config file."""
 
     import argparse
-    from configparser import ConfigParser as config_parser
     from configparser import NoSectionError, MissingSectionHeaderError
 
-    path_config = 'PATH_CONFIG'
     parser = argparse.ArgumentParser(
         description='qstat wrapper for better output. \
             Available ITEMS are "' + ''.join(itms.keys()) +
@@ -65,7 +82,7 @@ def parse_args():
     try:
         conf_parser = config_parser()
         conf_parser.read(args.config)
-        defaults = OrderedDict(conf_parser.items('Defaults'))
+        defaults = OrderedDict(conf_parser.items(dflt_section))
     except (NoSectionError, MissingSectionHeaderError):
         if config_file:
             print('Cannot read config file! Run install script.')
@@ -100,6 +117,8 @@ def parse_args():
                         help='number of spaces between `total` columns')
     parser.add_argument('--mute', action='store_true',
                         help='no output if no jobs')
+    parser.add_argument('-e', '--edit_config', action='store_true',
+                        help='edit config file')
 
     parser.set_defaults(**defaults)
     args = parser.parse_args(remaining_argv)
@@ -110,12 +129,20 @@ def parse_args():
                           if itm.lower() in itms))
 
     if not config_file:
+        write_config(vars(args), sys.stdout)
+        sys.exit()
+
+    if args.edit_config:
+        print('option (current value): enter new value')
+        print('empty string to keep current value')
+        print('spaces to set an actual empty string')
         args = vars(args)
-        config = config_parser()
-        config.add_section('Defaults')
         for opt in default_config:
-            config.set('Defaults', opt, str(args[opt]))
-        config.write(sys.stdout)
+            new_val = input('{} ({}): '.format(opt, args[opt]))
+            if new_val:
+                args[opt] = new_val
+
+        write_config(args, path_config)
         sys.exit()
 
     return args

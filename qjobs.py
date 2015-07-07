@@ -28,6 +28,7 @@ reversed_itms = 'psl'
 path_config = 'PATH_CONFIG'
 
 dflt_section = 'Defaults'
+
 default_config = OrderedDict((
     ('out', 'instq'),
     ('total', 's'),
@@ -72,8 +73,14 @@ def parse_args():
                         metavar='FILE',
                         help='specify config file, write current config \
                               if called without argument')
+    parser.add_argument('--default_config', action='store_true',
+                        help='config file set to default config')
 
     args, remaining_argv = parser.parse_known_args()
+
+    if args.default_config:
+        write_config(default_config, path_config)
+        sys.exit()
 
     config_file = args.config
     if not config_file:

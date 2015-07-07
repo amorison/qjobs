@@ -25,14 +25,15 @@ itms = OrderedDict((
 
 reversed_itms = 'psl'
 
-default_config = {
-    'out': 'instq',
-    'total': 's',
-    'sort': 'ips',
-    'width_tot': 120,
-    'sep_tot': 5,
-    'sep': 3,
-    'users': 'USER_NAME'}
+default_config = OrderedDict((
+    ('out', 'instq'),
+    ('total', 's'),
+    ('sort', 'ips'),
+    ('width_tot', 120),
+    ('sep_tot', 5),
+    ('sep', 3),
+    ('users', 'USER_NAME')
+    ))
 
 
 def parse_args():

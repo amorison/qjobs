@@ -34,8 +34,8 @@ default_config = OrderedDict((
     ('total', 's'),
     ('sort', 'ips'),
     ('width_tot', 120),
-    ('sep_tot', 5),
-    ('sep', 3),
+    ('sep_tot', '[     ]'),
+    ('sep', '[   ]'),
     ('users', 'USER_NAME')
     ))
 
@@ -78,6 +78,17 @@ def write_config(args, out_stream):
     else:
         with open(out_stream, 'w') as out_file:
             config.write(out_file)
+
+
+def rm_brackets(string):
+    """remove [ ] if at 1st and last char"""
+
+    if string[0] == '[':
+        string = string[1:]
+    if string[-1] == ']':
+        string = string[:-1]
+
+    return string
 
 
 def parse_args():
@@ -126,12 +137,12 @@ def parse_args():
                             will list jobs of all users')
     parser.add_argument('-f', '--file', type=argparse.FileType('r'),
                         help='use given xml file as input (for debug)')
-    parser.add_argument('--sep', type=int, metavar='INT',
-                        help='number of spaces between `out` columns')
+    parser.add_argument('--sep',
+                        help='separator between `out` columns')
     parser.add_argument('--width_tot', type=int, metavar='INT',
                         help='max width for `total` columns')
-    parser.add_argument('--sep_tot', type=int, metavar='INT',
-                        help='number of spaces between `total` columns')
+    parser.add_argument('--sep_tot',
+                        help='separator between `total` columns')
     parser.add_argument('--mute', action='store_true',
                         help='no output if no jobs')
     parser.add_argument('-e', '--edit_config', action='store_true',
@@ -161,6 +172,9 @@ def parse_args():
 
         write_config(args, path_config)
         sys.exit()
+
+    args.sep = rm_brackets(args.sep)
+    args.sep_tot = rm_brackets(args.sep_tot)
 
     return args
 
@@ -231,7 +245,7 @@ def print_jobs(alljobs, job_counter, args):
 
         for job in alljobs:
             print(*(job[itm].ljust(mlitm[itm]) for itm in args.out),
-                  sep=' '*args.sep)
+                  sep=args.sep)
         if args.total:
             print()
 
@@ -250,8 +264,8 @@ def print_jobs(alljobs, job_counter, args):
                          reverse=(itm in reversed_itms) or order_by_keys)
             mlk = max(len(k) for k, _ in dct)
             mlv = max(len(str(v)) for _, v in dct)
-            spr = ' '*args.sep_tot
-            nfld = (args.width_tot+len(spr))//(mlk+mlv+2+len(spr))
+            nfld = (args.width_tot+len(args.sep_tot)) // \
+                   (mlk+mlv+2+len(args.sep_tot))
             if nfld == 0:
                 nfld = 1
 
@@ -263,7 +277,7 @@ def print_jobs(alljobs, job_counter, args):
             for line in dct:
                 print(*('{}: {}'.format(k.ljust(mlk), str(v).rjust(mlv))
                         for k, v in line if (k, v) != (None, None)),
-                      sep=spr)
+                      sep=args.sep_tot)
 
 
 def main():

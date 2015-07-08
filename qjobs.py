@@ -164,14 +164,18 @@ def parse_args():
         sys.exit()
 
     if args.edit_config:
-        print('option (current value): enter new value')
+        print('option: current value (default)> enter new value')
         print('empty string to keep current value')
-        print('spaces to set an actual empty string')
+        print('single x to set to default value')
+        print('trailing spaces to set to an actual x/empty string', end='\n\n')
         args = vars(args)
-        for opt in default_config:
-            new_val = input('{} ({}): '.format(opt, args[opt]))
+        for opt, dflt_val in default_config.items():
+            new_val = input('{}: {} ({})> '.format(opt, args[opt], dflt_val))
             if new_val:
-                args[opt] = new_val
+                if new_val == 'x':
+                    args[opt] = dflt_val
+                else:
+                    args[opt] = new_val
 
         if not str(args['width_tot']).isdigit():
             args['width_tot'] = default_config['width_tot']

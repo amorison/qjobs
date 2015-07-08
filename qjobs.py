@@ -62,6 +62,9 @@ def read_config(args):
         if opt not in defaults:
             defaults[opt] = val
 
+    if not str(defaults['width_tot']).isdigit():
+        defaults['width_tot'] = default_config['width_tot']
+
     return defaults
 
 
@@ -169,6 +172,9 @@ def parse_args():
             new_val = input('{} ({}): '.format(opt, args[opt]))
             if new_val:
                 args[opt] = new_val
+
+        if not str(args['width_tot']).isdigit():
+            args['width_tot'] = default_config['width_tot']
 
         write_config(args, path_config)
         sys.exit()

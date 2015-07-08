@@ -74,7 +74,7 @@ def write_config(args, out_stream):
     config = config_parser()
     config.add_section(dflt_section)
     for opt in default_config:
-        config.set(dflt_section, opt, str(args[opt]))
+        config.set(dflt_section, opt, str(args[opt]).strip())
 
     if out_stream is sys.stdout:
         config.write(out_stream)

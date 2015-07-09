@@ -25,6 +25,8 @@ itms = OrderedDict((
 
 reversed_itms = 'psl'
 
+qstat_cmd = 'QSTAT_CMD'
+
 path_config = 'PATH_CONFIG'
 
 dflt_section = 'Defaults'
@@ -304,7 +306,7 @@ def main():
     if args.file:
         qstat_out = args.file
     else:
-        qstat_out = Popen('QSTAT_CMD -u "' + args.users + '" -xml -r',
+        qstat_out = Popen(qstat_cmd + ' -u "' + args.users + '" -xml -r',
                           shell=True, stdout=PIPE).stdout
 
     alljobs, job_counter = get_itms(qstat_out, args.total)

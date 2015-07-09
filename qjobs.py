@@ -264,16 +264,18 @@ def print_jobs(alljobs, job_counter, args):
     if args.total:
         print('tot: {}'.format(len(alljobs)))
         for itm in args.total:
-            order_by_keys = 0
-            if itm.isupper():
-                order_by_keys = 1
-                itm = itm.lower()
-            dct = job_counter[itm]
+            dct = job_counter[itm.lower()]
             if '' in dct:
                 dct['not set'] = dct.pop('')
+
             dct = sorted(dct.items(),
-                         key=lambda x: x[order_by_keys],
-                         reverse=(itm in reversed_itms) or order_by_keys)
+                         key=lambda x: x[0],
+                         reverse=itm.lower() in reversed_itms)
+            if itm.isupper():
+                dct = sorted(dct,
+                             key=lambda x: x[1],
+                             reverse=True)
+
             mlk = max(len(k) for k, _ in dct)
             mlv = max(len(str(v)) for _, v in dct)
             nfld = (args.width_tot+len(args.sep_tot)) // \

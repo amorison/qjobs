@@ -23,7 +23,7 @@ itms = OrderedDict((
     ('l', Itmtp('number of slots used', ['slots']))
     ))
 
-reversed_itms = 'psl'
+reversed_itms = 'psel'
 
 qstat_cmd = 'QSTAT_CMD'
 
@@ -249,7 +249,7 @@ def print_jobs(alljobs, job_counter, args):
     if args.out:
         for itm in args.sort:
             if itm in itms:
-                alljobs.sort(key=lambda job: job[itm],
+                alljobs.sort(key=lambda job: job[itm if itm != 'e' else 't'],
                              reverse=(itm in reversed_itms))
         mlitm = {}
         for itm in args.out:

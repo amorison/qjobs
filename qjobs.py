@@ -36,6 +36,7 @@ default_config = OrderedDict((
     ('out', 'instq'),
     ('total', 's'),
     ('sort', 'ips'),
+    ('elapsed_format', '{H:03d}:{m:02d} ({D:.2f} days)'),
     ('width_tot', 120),
     ('sep_tot', '[     ]'),
     ('sep', '[   ]'),
@@ -136,6 +137,8 @@ def parse_args():
                                 to count the jobs.')
     parser.add_argument('-s', '--sort', metavar='ITEMS',
                         help='specify the items to use to sort the jobs')
+    parser.add_argument('--elapsed_format', metavar='FMT',
+                        help='specify e item format')
     parser.add_argument('-u', '--users', nargs='?', const='*',
                         metavar='USR1,USR2,...',
                         help='specify list of users, use commas \
@@ -192,16 +195,31 @@ def parse_args():
     return args
 
 
-def get_itms(jobs_list, totals):
-    """extract data from xml job tree
-    and count totals"""
+def elapsed_time(start_time, fmt):
+    """return formatted elapsed time since start time"""
 
     from datetime import datetime, timedelta
 
+    delta = datetime.today() - \
+            datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S')
+    dct = {}
+    dct['d'] = delta.days
+    dct['h'], rmd = divmod(delta.seconds, 3600)
+    dct['m'], dct['s'] = divmod(rmd, 60)
+    dct['S'] = 86400 * delta.days + delta.seconds
+    dct['M'] = dct['S'] // 60
+    dct['H'] = dct['S'] // 3600
+    dct['D'] = dct['S'] / 86400.
+
+    return fmt.format(**dct)
+
+
+def get_itms(jobs_list, args):
+    """extract data from xml job tree
+    and count totals"""
+
     alljobs = []
     job_counter = {}
-
-    now = datetime.today()
 
     for j in jobs_list:
         job = {}
@@ -219,14 +237,12 @@ def get_itms(jobs_list, totals):
 
         if job['t']:
             job['t'] = job['t'].replace('T', ' ')
-            delta = now - datetime.strptime(job['t'], '%Y-%m-%d %H:%M:%S')
-            job['e'] = str(timedelta(days=delta.days, seconds=delta.seconds,
-                                     microseconds=0))
+            job['e'] = elapsed_time(job['t'], args.elapsed_format)
         else:
             job['t'] = 'not set'
             job['e'] = 'not set'
 
-        for itm in totals.lower():
+        for itm in args.total.lower():
             if itm not in job_counter:
                 job_counter[itm] = {}
             if job[itm] in job_counter[itm]:
@@ -313,7 +329,7 @@ def main():
 
     qstat_out = ET.parse(qstat_out).getroot().iter('job_list')
 
-    alljobs, job_counter = get_itms(qstat_out, args.total)
+    alljobs, job_counter = get_itms(qstat_out, args)
 
     if not alljobs:
         if not args.mute:

@@ -191,17 +191,16 @@ def parse_args():
     return args
 
 
-def get_itms(qstat_out, totals):
+def get_itms(jobs_list, totals):
     """extract data from xml job tree
     and count totals"""
 
     from datetime import datetime, timedelta
-    import xml.etree.ElementTree as ET
-
-    jobs_list = ET.parse(qstat_out).getroot().iter('job_list')
 
     alljobs = []
     job_counter = {}
+
+    now = datetime.today()
 
     for j in jobs_list:
         job = {}
@@ -219,8 +218,7 @@ def get_itms(qstat_out, totals):
 
         if job['t']:
             job['t'] = job['t'].replace('T', ' ')
-            delta = datetime.today() -\
-                datetime.strptime(job['t'], '%Y-%m-%d %H:%M:%S')
+            delta = now - datetime.strptime(job['t'], '%Y-%m-%d %H:%M:%S')
             job['e'] = str(timedelta(days=delta.days, seconds=delta.seconds,
                                      microseconds=0))
         else:
@@ -298,6 +296,7 @@ def main():
     """execute qstat and produces output according to chosen options."""
 
     from subprocess import Popen, PIPE
+    import xml.etree.ElementTree as ET
 
     args = parse_args()
     if args.items:
@@ -310,6 +309,8 @@ def main():
     else:
         qstat_out = Popen(qstat_cmd + ' -u "' + args.users + '" -xml -r',
                           shell=True, stdout=PIPE).stdout
+
+    qstat_out = ET.parse(qstat_out).getroot().iter('job_list')
 
     alljobs, job_counter = get_itms(qstat_out, args.total)
 

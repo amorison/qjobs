@@ -2,6 +2,7 @@
 """qjobs is a qstat wrapper designed to get a better output."""
 
 from configparser import ConfigParser as config_parser
+from configparser import NoSectionError, MissingSectionHeaderError
 from collections import OrderedDict, namedtuple
 import sys
 
@@ -44,8 +45,6 @@ default_config = OrderedDict((
 
 def read_config(args):
     """read config file"""
-
-    from configparser import NoSectionError, MissingSectionHeaderError
 
     config_file = args.config
     if not config_file:
@@ -322,4 +321,19 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except Exception as excpt:
+        if excpt not in (SystemExit, NoSectionError,
+                         MissingSectionHeaderError):
+            import logging
+            from tempfile import NamedTemporaryFile
+
+            tmpf = NamedTemporaryFile(prefix='qjobs', suffix='.log',
+                                      delete=False)
+            tmpf.close()
+            logging.basicConfig(filename=tmpf.name, level=logging.DEBUG)
+            logging.exception('qjobs exception log:')
+            print('ERROR! Please check', tmpf.name, 'for more information.')
+            sys.exit()
+        raise

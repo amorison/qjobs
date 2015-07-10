@@ -40,7 +40,8 @@ default_config = OrderedDict((
     ('width_tot', 120),
     ('sep_tot', '[     ]'),
     ('sep', '[   ]'),
-    ('users', 'USER_NAME')
+    ('users', 'USER_NAME'),
+    ('editor', 'vim')
     ))
 
 
@@ -101,6 +102,8 @@ def parse_args():
     default config from config file."""
 
     import argparse
+    import shlex
+    from subprocess import call
 
     parser = argparse.ArgumentParser(
         description='qstat wrapper for better output. \
@@ -155,7 +158,9 @@ def parse_args():
     parser.add_argument('--mute', action='store_true',
                         help='no output if no jobs')
     parser.add_argument('-e', '--edit_config', action='store_true',
-                        help='edit config file')
+                        help='edit config file with text editor')
+    parser.add_argument('-E', '--edit_interactive', action='store_true',
+                        help='edit config file in an interactive way')
 
     parser.set_defaults(**defaults)
     args = parser.parse_args(remaining_argv)
@@ -170,6 +175,10 @@ def parse_args():
         sys.exit()
 
     if args.edit_config:
+        call(shlex.split(args.editor + ' ' + path_config))
+        sys.exit()
+
+    if args.edit_interactive:
         print(path_config+':\n')
         print('option: current value (default)> enter new value')
         print('empty string to keep current value')

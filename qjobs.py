@@ -208,10 +208,10 @@ def parse_args():
 def elapsed_time(start_time, fmt):
     """return formatted elapsed time since start time"""
 
-    from datetime import datetime, timedelta
+    from datetime import datetime
 
     delta = datetime.today() - \
-            datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S')
+        datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S')
     dct = {}
     dct['d'] = delta.days
     dct['h'], rmd = divmod(delta.seconds, 3600)
@@ -310,7 +310,7 @@ def print_total(alljobs, job_counter, args):
 
         if tot_elaps:
             dct = list((elapsed_time(k, args.elapsed_format), v)
-                    for k, v in dct)
+                       for k, v in dct)
         mlk = max(len(k) for k, _ in dct)
         mlv = max(len(str(v)) for _, v in dct)
         nfld = (args.width_tot+len(args.sep_tot)) // \

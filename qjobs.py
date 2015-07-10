@@ -243,7 +243,7 @@ def get_itms(jobs_list, args):
             job['t'] = 'not set'
             job['e'] = 'not set'
 
-        for itm in args.total.lower():
+        for itm in args.total.lower().replace('e', 't'):
             if itm not in job_counter:
                 job_counter[itm] = {}
             if job[itm] in job_counter[itm]:
@@ -260,9 +260,11 @@ def print_out(alljobs, args):
     """produces output of jobs list"""
 
     for itm in args.sort:
+        rvs = itm in reversed_itms
+        itm = itm.replace('e', 't')
         if itm in itms:
-            alljobs.sort(key=lambda job: job[itm if itm != 'e' else 't'],
-                         reverse=(itm in reversed_itms))
+            alljobs.sort(key=lambda job: job[itm],
+                         reverse=rvs)
     mlitm = {}
     for itm in args.out:
         mlitm[itm] = max(len(job[itm]) for job in alljobs)
@@ -280,18 +282,26 @@ def print_total(alljobs, job_counter, args):
 
     print('tot: {}'.format(len(alljobs)))
     for itm in args.total:
+        rvs = itm.lower() in reversed_itms
+        tot_elaps = False
+        if itm.lower() == 'e':
+            tot_elaps = True
+            itm = itm.replace('e', 't').replace('E', 'T')
         dct = job_counter[itm.lower()]
         if '' in dct:
             dct['not set'] = dct.pop('')
 
         dct = sorted(dct.items(),
                      key=lambda x: x[0],
-                     reverse=itm.lower() in reversed_itms)
+                     reverse=rvs)
         if itm.isupper():
             dct = sorted(dct,
                          key=lambda x: x[1],
                          reverse=True)
 
+        if tot_elaps:
+            dct = list((elapsed_time(k, args.elapsed_format), v)
+                    for k, v in dct)
         mlk = max(len(k) for k, _ in dct)
         mlv = max(len(str(v)) for _, v in dct)
         nfld = (args.width_tot+len(args.sep_tot)) // \

@@ -90,9 +90,9 @@ def write_config(args, out_stream):
 def rm_brackets(string):
     """remove [ ] if at 1st and last char"""
 
-    if string[0] == '[':
+    if string and string[0] == '[':
         string = string[1:]
-    if string[-1] == ']':
+    if string and string[-1] == ']':
         string = string[:-1]
 
     return string

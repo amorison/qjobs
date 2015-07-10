@@ -1,6 +1,7 @@
 #!PYTHON_CMD
 """qjobs is a qstat wrapper designed to get a better output."""
 
+import argparse
 from configparser import ConfigParser as config_parser
 from configparser import NoSectionError, MissingSectionHeaderError
 from collections import OrderedDict, namedtuple
@@ -97,36 +98,8 @@ def rm_brackets(string):
     return string
 
 
-def parse_args():
-    """parse arguments given in command line and fetch
-    default config from config file."""
-
-    import argparse
-    import shlex
-    from subprocess import call
-
-    parser = argparse.ArgumentParser(
-        description='qstat wrapper for better output. \
-            Available ITEMS are "' + ''.join(itms.keys()) +
-        '" see -i option for their description.', add_help=False)
-    parser.add_argument('-c', '--config',
-                        nargs='?',
-                        const=None,
-                        default=path_config,
-                        metavar='FILE',
-                        help='specify config file, write current config \
-                              if called without argument')
-    parser.add_argument('--default_config', action='store_true',
-                        help='config file set to default config')
-
-    args, remaining_argv = parser.parse_known_args()
-
-    if args.default_config:
-        write_config(default_config, path_config)
-        sys.exit()
-
-    config_to_stdout = not args.config
-    defaults = read_config(args)
+def add_args_parser(parser, defaults):
+    """add mains arguments and defaults to parser"""
 
     parser = argparse.ArgumentParser(parents=[parser])
     parser.add_argument('-i', '--items', action='store_true',
@@ -163,6 +136,39 @@ def parse_args():
                         help='edit config file in an interactive way')
 
     parser.set_defaults(**defaults)
+    return parser
+
+
+def parse_args():
+    """parse arguments given in command line and fetch
+    default config from config file."""
+
+    import shlex
+    from subprocess import call
+
+    parser = argparse.ArgumentParser(
+        description='qstat wrapper for better output. \
+            Available ITEMS are "' + ''.join(itms.keys()) +
+        '" see -i option for their description.', add_help=False)
+    parser.add_argument('-c', '--config',
+                        nargs='?',
+                        const=None,
+                        default=path_config,
+                        metavar='FILE',
+                        help='specify config file, write current config \
+                              if called without argument')
+    parser.add_argument('--default_config', action='store_true',
+                        help='config file set to default config')
+
+    args, remaining_argv = parser.parse_known_args()
+
+    if args.default_config:
+        write_config(default_config, path_config)
+        sys.exit()
+
+    config_to_stdout = not args.config
+
+    parser = add_args_parser(parser, read_config(args))
     args = parser.parse_args(remaining_argv)
 
     args.out = ''.join((itm for itm in args.out

@@ -166,6 +166,7 @@ def parse_args():
                           if itm.lower() in itms))
 
     if config_to_stdout:
+        print(path_config+':')
         write_config(vars(args), sys.stdout)
         sys.exit()
 

@@ -166,11 +166,11 @@ def parse_args():
                           if itm.lower() in itms))
 
     if config_to_stdout:
-        print(path_config+':')
         write_config(vars(args), sys.stdout)
         sys.exit()
 
     if args.edit_config:
+        print(path_config+':\n')
         print('option: current value (default)> enter new value')
         print('empty string to keep current value')
         print('single x to set to default value')

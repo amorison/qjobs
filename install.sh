@@ -88,7 +88,8 @@ echo 'user name found: '$USER
 
 echo ''
 
-$pythonCmd $instdest/main.py -c > $pathConfig
+$pythonCmd $instdest/main.py -c > rc_tmp
+\mv rc_tmp $pathConfig
 
 echo 'config file created at '$pathConfig':'
 \cat $pathConfig

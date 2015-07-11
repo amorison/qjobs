@@ -19,6 +19,7 @@ instdest=$HOME'/.local/share/qjobs'
 echo 'copy sources files to '$instdest
 echo '...'
 mkdir -p $instdest
+\rm -rf $instdest/*
 \cp src/* $instdest
 echo 'done.'
 

@@ -5,17 +5,7 @@ import sys
 
 import configfile
 import constants
-
-
-def rm_brackets(string):
-    """remove [ ] if at 1st and last char"""
-
-    if string and string[0] == '[':
-        string = string[1:]
-    if string and string[-1] == ']':
-        string = string[:-1]
-
-    return string
+from misc import rm_brackets
 
 
 def add_args(parser, defaults):
@@ -129,4 +119,3 @@ def parse():
     args.sep_tot = rm_brackets(args.sep_tot)
 
     return args
-

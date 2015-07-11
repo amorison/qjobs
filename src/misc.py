@@ -61,13 +61,13 @@ def get_itms(jobs_list, args):
             job['t'] = 'not set'
             job['e'] = 'not set'
 
-        for itm in args.total.lower().replace('e', 't'):
+        for itm in set(args.total.lower()):
             if itm not in job_counter:
                 job_counter[itm] = {}
             if job[itm] in job_counter[itm]:
-                job_counter[itm][job[itm]] += 1
+                job_counter[itm][job[itm]].append(job)
             else:
-                job_counter[itm][job[itm]] = 1
+                job_counter[itm][job[itm]] = [job]
 
         alljobs.append(job)
 

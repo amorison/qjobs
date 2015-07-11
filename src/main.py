@@ -1,10 +1,7 @@
 #!PYTHON_CMD
 """qjobs is a qstat wrapper designed to get a better output."""
 
-from configparser import NoSectionError, MissingSectionHeaderError
 import sys
-
-import constants
 
 
 def main():
@@ -14,6 +11,7 @@ def main():
     import xml.etree.ElementTree as ET
 
     import cmdargs
+    import constants
     from misc import get_itms
     import output
 
@@ -53,9 +51,13 @@ def main():
 
 
 if __name__ == '__main__':
+
     try:
         main()
     except Exception as excpt:
+
+        from configparser import NoSectionError, MissingSectionHeaderError
+
         if excpt not in (SystemExit, NoSectionError,
                          MissingSectionHeaderError):
             import logging

@@ -1,7 +1,5 @@
 """miscellaneous functions"""
 
-import constants
-
 
 def rm_brackets(string):
     """remove [ ] if at 1st and last char"""
@@ -36,6 +34,8 @@ def elapsed_time(start_time, fmt):
 def get_itms(jobs_list, args):
     """extract data from xml job tree
     and count totals"""
+
+    import constants
 
     alljobs = []
     job_counter = {}

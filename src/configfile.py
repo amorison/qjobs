@@ -1,14 +1,14 @@
 """provides read/write config file functions"""
 
 from configparser import ConfigParser as config_parser
-from configparser import NoSectionError, MissingSectionHeaderError
-import sys
 
 import constants
 
 
 def read(args):
     """read config file"""
+
+    from configparser import NoSectionError, MissingSectionHeaderError
 
     config_file = args.config
     if not config_file:
@@ -36,6 +36,8 @@ def read(args):
 
 def write(args, out_stream):
     """write config file"""
+
+    import sys
 
     config = config_parser()
     config.add_section(constants.dflt_section)

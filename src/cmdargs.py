@@ -1,11 +1,6 @@
 """parses command arguments"""
 
 import argparse
-import sys
-
-import configfile
-import constants
-from misc import rm_brackets
 
 
 def add_args(parser, defaults):
@@ -55,6 +50,11 @@ def parse():
 
     import shlex
     from subprocess import call
+    import sys
+
+    import configfile
+    import constants
+    from misc import rm_brackets
 
     parser = argparse.ArgumentParser(
         description='qstat wrapper for better output. \

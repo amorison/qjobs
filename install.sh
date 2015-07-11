@@ -62,10 +62,10 @@ fi
 echo 'will use Python '$pythonVersion' at '$pythonCmd
 
 if [ "$pythonVersion" -eq "2" ]; then
-    \sed -i '3 a from __future__ import print_function' $instdest/qjobs.py
-    \sed -i 's/ConfigParser/SafeConfigParser/' $instdest/qjobs.py
-    \sed -i 's/configparser/ConfigParser/' $instdest/qjobs.py
-    \sed -i 's/zip_longest/izip_longest/' $instdest/qjobs.py
+    \sed -i '3 a from __future__ import print_function' $instdest/main.py
+    \sed -i 's/ConfigParser/SafeConfigParser/' $instdest/main.py
+    \sed -i 's/configparser/ConfigParser/' $instdest/main.py
+    \sed -i 's/zip_longest/izip_longest/' $instdest/main.py
     echo 'script modified for compatibility'
 fi
 
@@ -78,23 +78,23 @@ pathScript=$pathScript'/'$scriptFile
 pathConfig=$pathConfig'/'$configFile
 
 \sed -i 's!QSTAT_CMD!'$qstatCmd'!' $instdest/constants.py
-\sed -i 's!PYTHON_CMD!'$pythonCmd'!' $instdest/qjobs.py
+\sed -i 's!PYTHON_CMD!'$pythonCmd'!' $instdest/main.py
 \sed -i 's!PATH_CONFIG!'$pathConfig'!' $instdest/constants.py
 \sed -i 's/USER_NAME/'$USER'/' $instdest/constants.py
 \sed -i 's/EDITOR/'$editor'/' $instdest/constants.py
-\chmod u+x $instdest/qjobs.py
+\chmod u+x $instdest/main.py
 
 echo 'user name found: '$USER
 
 echo ''
 
-$pythonCmd $instdest/qjobs.py -c > $pathConfig
+$pythonCmd $instdest/main.py -c > $pathConfig
 
 echo 'config file created at '$pathConfig':'
 \cat $pathConfig
 
 echo 'linking '$pathScript' ...'
-\ln -s -f $instdest/qjobs.py $pathScript
+\ln -s -f $instdest/main.py $pathScript
 echo 'done.'
 
 echo ''

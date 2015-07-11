@@ -4,46 +4,10 @@
 import argparse
 from configparser import ConfigParser as config_parser
 from configparser import NoSectionError, MissingSectionHeaderError
-from collections import OrderedDict, namedtuple
+from collections import OrderedDict
 import sys
 
-Itmtp = namedtuple('Itmtp', ['dscr', 'xml_tag'])
-
-itms = OrderedDict((
-    ('i', Itmtp('job id', ['JB_job_number'])),
-    ('p', Itmtp('job priority', ['JAT_prio'])),
-    ('n', Itmtp('job name', ['JB_name'])),
-    ('o', Itmtp('job owner', ['JB_owner'])),
-    ('s', Itmtp('job state', ['state'])),
-    ('t', Itmtp('job start/submission time', ['JAT_start_time',
-                                              'JB_submission_time'])),
-    ('e', Itmtp('elapsed time since start/submission', [])),
-    ('q', Itmtp('queue name without domain', [])),
-    ('d', Itmtp('queue domain', [])),
-    ('k', Itmtp('queue name with domain', ['queue_name'])),
-    ('r', Itmtp('requested queue(s)', ['hard_req_queue'])),
-    ('l', Itmtp('number of slots used', ['slots']))
-    ))
-
-reversed_itms = 'psel'
-
-qstat_cmd = 'QSTAT_CMD'
-
-path_config = 'PATH_CONFIG'
-
-dflt_section = 'Defaults'
-
-default_config = OrderedDict((
-    ('out', 'instq'),
-    ('total', 's'),
-    ('sort', 'ips'),
-    ('elapsed_format', '{H:03d}:{m:02d} ({D:.2f} days)'),
-    ('width_tot', 120),
-    ('sep_tot', '[     ]'),
-    ('sep', '[   ]'),
-    ('users', 'USER_NAME'),
-    ('editor', 'EDITOR')
-    ))
+import constants
 
 
 def read_config(args):
@@ -51,23 +15,23 @@ def read_config(args):
 
     config_file = args.config
     if not config_file:
-        config_file = path_config
+        config_file = constants.path_config
 
     try:
         conf_parser = config_parser()
         conf_parser.read(config_file)
-        defaults = OrderedDict(conf_parser.items(dflt_section))
+        defaults = OrderedDict(conf_parser.items(constants.dflt_section))
     except (NoSectionError, MissingSectionHeaderError):
         if args.config:
             print('Cannot read config file! Run install script.')
         defaults = OrderedDict()
 
-    for opt, val in default_config.items():
+    for opt, val in constants.default_config.items():
         if opt not in defaults:
             defaults[opt] = val
 
     if not str(defaults['width_tot']).isdigit():
-        defaults['width_tot'] = default_config['width_tot']
+        defaults['width_tot'] = constants.default_config['width_tot']
 
     return defaults
 
@@ -76,9 +40,9 @@ def write_config(args, out_stream):
     """write config file"""
 
     config = config_parser()
-    config.add_section(dflt_section)
-    for opt in default_config:
-        config.set(dflt_section, opt, str(args[opt]).strip())
+    config.add_section(constants.dflt_section)
+    for opt in constants.default_config:
+        config.set(constants.dflt_section, opt, str(args[opt]).strip())
 
     if out_stream is sys.stdout:
         config.write(out_stream)
@@ -148,12 +112,12 @@ def parse_args():
 
     parser = argparse.ArgumentParser(
         description='qstat wrapper for better output. \
-            Available ITEMS are "' + ''.join(itms.keys()) +
+            Available ITEMS are "' + ''.join(constants.itms.keys()) +
         '" see -i option for their description.', add_help=False)
     parser.add_argument('-c', '--config',
                         nargs='?',
                         const=None,
-                        default=path_config,
+                        default=constants.path_config,
                         metavar='FILE',
                         help='specify config file, write current config \
                               if called without argument')
@@ -163,7 +127,7 @@ def parse_args():
     args, remaining_argv = parser.parse_known_args()
 
     if args.default_config:
-        write_config(default_config, path_config)
+        write_config(constants.default_config, constants.path_config)
         sys.exit()
 
     config_to_stdout = not args.config
@@ -172,26 +136,26 @@ def parse_args():
     args = parser.parse_args(remaining_argv)
 
     args.out = ''.join((itm for itm in args.out
-                        if itm in itms))
+                        if itm in constants.itms))
     args.total = ''.join((itm for itm in args.total
-                          if itm.lower() in itms))
+                          if itm.lower() in constants.itms))
 
     if config_to_stdout:
         write_config(vars(args), sys.stdout)
         sys.exit()
 
     if args.edit_config:
-        call(shlex.split(args.editor + ' ' + path_config))
+        call(shlex.split(args.editor + ' ' + constants.path_config))
         sys.exit()
 
     if args.edit_interactive:
-        print(path_config+':\n')
+        print(constants.path_config+':\n')
         print('option: current value (default)> enter new value')
         print('empty string to keep current value')
         print('single x to set to default value')
         print('trailing spaces to set to an actual x/empty string', end='\n\n')
         args = vars(args)
-        for opt, dflt_val in default_config.items():
+        for opt, dflt_val in constants.default_config.items():
             new_val = input('{}: {} ({})> '.format(opt, args[opt], dflt_val))
             if new_val:
                 if new_val == 'x':
@@ -200,9 +164,9 @@ def parse_args():
                     args[opt] = new_val
 
         if not str(args['width_tot']).isdigit():
-            args['width_tot'] = default_config['width_tot']
+            args['width_tot'] = constants.default_config['width_tot']
 
-        write_config(args, path_config)
+        write_config(args, constants.path_config)
         sys.exit()
 
     args.sep = rm_brackets(args.sep)
@@ -239,7 +203,7 @@ def get_itms(jobs_list, args):
 
     for j in jobs_list:
         job = {}
-        for itm, itmtp in itms.items():
+        for itm, itmtp in constants.itms.items():
             job[itm] = ''
             for tag in itmtp.xml_tag:
                 elts = j.iter(tag)
@@ -275,9 +239,9 @@ def print_out(alljobs, args):
     """produces output of jobs list"""
 
     for itm in args.sort:
-        rvs = itm in reversed_itms
+        rvs = itm in constants.reversed_itms
         itm = itm.replace('e', 't')
-        if itm in itms:
+        if itm in constants.itms:
             alljobs.sort(key=lambda job: job[itm],
                          reverse=rvs)
     mlitm = {}
@@ -297,7 +261,7 @@ def print_total(alljobs, job_counter, args):
 
     print('tot: {}'.format(len(alljobs)))
     for itm in args.total:
-        rvs = itm.lower() in reversed_itms
+        rvs = itm.lower() in constants.reversed_itms
         tot_elaps = False
         if itm.lower() == 'e':
             tot_elaps = True
@@ -343,14 +307,15 @@ def main():
 
     args = parse_args()
     if args.items:
-        print(*('{}: {}'.format(k, v.dscr) for k, v in itms.items()),
+        print(*('{}: {}'.format(k, v.dscr) for k, v in constants.itms.items()),
               sep='\n')
         sys.exit()
 
     if args.file:
         qstat_out = args.file
     else:
-        qstat_out = Popen(qstat_cmd + ' -u "' + args.users + '" -xml -r',
+        qstat_out = Popen(constants.qstat_cmd +
+                          ' -u "' + args.users + '" -xml -r',
                           shell=True, stdout=PIPE).stdout
 
     qstat_out = ET.parse(qstat_out).getroot().iter('job_list')

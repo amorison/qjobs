@@ -42,7 +42,7 @@ default_config = OrderedDict((
     ('sep_tot', '[     ]'),
     ('sep', '[   ]'),
     ('users', 'USER_NAME'),
-    ('editor', 'vim')
+    ('editor', 'EDITOR')
     ))
 
 

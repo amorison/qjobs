@@ -7,6 +7,7 @@ configFile='qjobs.rc'
 qstatCmd=''
 pythonCmd=''
 pythonVersion=0
+editor='vim'
 
 #############################################################################
 # DO NOT change anything under this line unless you know what you are doing #
@@ -29,7 +30,7 @@ if [ -z "$qstatCmd" ]; then
         echo 'qstat not found, please enter its location:'
         \read -r qstatCmd
     fi
-    echo 'qstat found at '$qstatCmd
+    echo 'will use '$qstatCmd' as qstat'
 else
     echo 'qstat already set at '$qstatCmd
 fi
@@ -81,6 +82,7 @@ pathConfig=$pathConfig'/'$configFile
 \sed -i 's!PYTHON_CMD!'$pythonCmd'!' $instdest
 \sed -i 's!PATH_CONFIG!'$pathConfig'!' $instdest
 \sed -i 's/USER_NAME/'$USER'/' $instdest
+\sed -i 's/EDITOR/'$editor'/' $instdest
 \chmod u+x $instdest
 
 echo 'user name found: '$USER

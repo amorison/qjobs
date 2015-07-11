@@ -27,8 +27,6 @@ def total(alljobs, job_counter, args):
     from itertools import zip_longest as ziplgst
     from math import ceil
 
-    from misc import elapsed_time
-
     print('tot: {}'.format(len(alljobs)))
     for itm in args.total:
         rvs = itm.lower() in constants.reversed_itms

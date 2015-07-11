@@ -63,8 +63,8 @@ echo 'will use Python '$pythonVersion' at '$pythonCmd
 
 if [ "$pythonVersion" -eq "2" ]; then
     \sed -i '3 a from __future__ import print_function' $instdest/main.py
-    \sed -i 's/ConfigParser/SafeConfigParser/' $instdest/main.py
-    \sed -i 's/configparser/ConfigParser/' $instdest/main.py
+    \sed -i 's/ConfigParser/SafeConfigParser/' $instdest/configfile.py
+    \sed -i 's/configparser/ConfigParser/' $instdest/configfile.py
     \sed -i 's/zip_longest/izip_longest/' $instdest/main.py
     echo 'script modified for compatibility'
 fi

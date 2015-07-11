@@ -2,53 +2,10 @@
 """qjobs is a qstat wrapper designed to get a better output."""
 
 import argparse
-from configparser import ConfigParser as config_parser
-from configparser import NoSectionError, MissingSectionHeaderError
-from collections import OrderedDict
 import sys
 
+import configfile
 import constants
-
-
-def read_config(args):
-    """read config file"""
-
-    config_file = args.config
-    if not config_file:
-        config_file = constants.path_config
-
-    try:
-        conf_parser = config_parser()
-        conf_parser.read(config_file)
-        defaults = OrderedDict(conf_parser.items(constants.dflt_section))
-    except (NoSectionError, MissingSectionHeaderError):
-        if args.config:
-            print('Cannot read config file! Run install script.')
-        defaults = OrderedDict()
-
-    for opt, val in constants.default_config.items():
-        if opt not in defaults:
-            defaults[opt] = val
-
-    if not str(defaults['width_tot']).isdigit():
-        defaults['width_tot'] = constants.default_config['width_tot']
-
-    return defaults
-
-
-def write_config(args, out_stream):
-    """write config file"""
-
-    config = config_parser()
-    config.add_section(constants.dflt_section)
-    for opt in constants.default_config:
-        config.set(constants.dflt_section, opt, str(args[opt]).strip())
-
-    if out_stream is sys.stdout:
-        config.write(out_stream)
-    else:
-        with open(out_stream, 'w') as out_file:
-            config.write(out_file)
 
 
 def rm_brackets(string):
@@ -127,12 +84,12 @@ def parse_args():
     args, remaining_argv = parser.parse_known_args()
 
     if args.default_config:
-        write_config(constants.default_config, constants.path_config)
+        configfile.write(constants.default_config, constants.path_config)
         sys.exit()
 
     config_to_stdout = not args.config
 
-    parser = add_args_parser(parser, read_config(args))
+    parser = add_args_parser(parser, configfile.read(args))
     args = parser.parse_args(remaining_argv)
 
     args.out = ''.join((itm for itm in args.out
@@ -141,7 +98,7 @@ def parse_args():
                           if itm.lower() in constants.itms))
 
     if config_to_stdout:
-        write_config(vars(args), sys.stdout)
+        configfile.write(vars(args), sys.stdout)
         sys.exit()
 
     if args.edit_config:
@@ -166,7 +123,7 @@ def parse_args():
         if not str(args['width_tot']).isdigit():
             args['width_tot'] = constants.default_config['width_tot']
 
-        write_config(args, constants.path_config)
+        configfile.write(args, constants.path_config)
         sys.exit()
 
     args.sep = rm_brackets(args.sep)
@@ -344,8 +301,8 @@ if __name__ == '__main__':
     try:
         main()
     except Exception as excpt:
-        if excpt not in (SystemExit, NoSectionError,
-                         MissingSectionHeaderError):
+        if excpt not in (SystemExit, configfile.NoSectionError,
+                         configfile.MissingSectionHeaderError):
             import logging
             from tempfile import NamedTemporaryFile
 

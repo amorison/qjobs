@@ -12,7 +12,10 @@ pythonVersion=0
 # DO NOT change anything under this line unless you know what you are doing #
 #############################################################################
 
-\cp qjobs.py qjobs_tmp.py
+instdest=$HOME'/.local/share/qjobs'
+mkdir -p $instdest
+\cp src/* $instdest
+instdest=$instdest'/qjobs.py'
 
 if [ -z "$qstatCmd" ]; then
     echo 'Looking for qstat...'
@@ -52,10 +55,10 @@ fi
 echo 'Python '$pythonVersion' found at '$pythonCmd
 
 if [ "$pythonVersion" -eq "2" ]; then
-    \sed -i '3 a from __future__ import print_function' qjobs_tmp.py
-    \sed -i 's/ConfigParser/SafeConfigParser/' qjobs_tmp.py
-    \sed -i 's/configparser/ConfigParser/' qjobs_tmp.py
-    \sed -i 's/zip_longest/izip_longest/' qjobs_tmp.py
+    \sed -i '3 a from __future__ import print_function' $instdest
+    \sed -i 's/ConfigParser/SafeConfigParser/' $instdest
+    \sed -i 's/configparser/ConfigParser/' $instdest
+    \sed -i 's/zip_longest/izip_longest/' $instdest
     echo 'script modified for compatibility'
 fi
 
@@ -67,25 +70,23 @@ echo ''
 pathScript=$pathScript'/'$scriptFile
 pathConfig=$pathConfig'/'$configFile
 
-\sed -i 's!QSTAT_CMD!'$qstatCmd'!' qjobs_tmp.py
-\sed -i 's!PYTHON_CMD!'$pythonCmd'!' qjobs_tmp.py
-\sed -i 's!PATH_CONFIG!'$pathConfig'!' qjobs_tmp.py
-\sed -i 's/USER_NAME/'$USER'/' qjobs_tmp.py
-\chmod u+x qjobs_tmp.py
+\sed -i 's!QSTAT_CMD!'$qstatCmd'!' $instdest
+\sed -i 's!PYTHON_CMD!'$pythonCmd'!' $instdest
+\sed -i 's!PATH_CONFIG!'$pathConfig'!' $instdest
+\sed -i 's/USER_NAME/'$USER'/' $instdest
+\chmod u+x $instdest
 
 echo 'user name found: '$USER
 
 echo ''
 
-./qjobs_tmp.py -c > rc_tmp
-
-\rm -rf __pycache__ *.pyc
+$pythonCmd $instdest -c > rc_tmp
 
 echo 'config file created:'
 \cat rc_tmp
 
 echo 'qjobs will be installed as '$pathScript' ...'
-\mv qjobs_tmp.py $pathScript
+\ln -s -f $instdest $pathScript
 echo '...done.'
 
 echo 'config file will be moved to '$pathConfig' ...'

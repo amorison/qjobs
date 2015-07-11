@@ -13,6 +13,8 @@ editor='vim'
 # DO NOT change anything under this line unless you know what you are doing #
 #############################################################################
 
+\cp "$0" install_cp
+
 instdest=$HOME'/.local/share/qjobs'
 echo 'copy sources files to '$instdest
 echo '...'
@@ -34,6 +36,8 @@ else
     echo 'qstat already set at '$qstatCmd
 fi
 
+\sed -i "s!^qstatCmd=.*!qstatCmd='$qstatCmd'!" install_cp
+
 echo ''
 
 echo 'Looking for Python...'
@@ -50,6 +54,8 @@ if [ -z "$pythonCmd" ]; then
     else
         pythonVersion=3
     fi
+else
+    echo 'Python already set'
 fi
 
 if [ "$pythonVersion" -eq "0" ]; then
@@ -60,6 +66,9 @@ if [ "$pythonVersion" -eq "0" ]; then
 fi
 
 echo 'will use Python '$pythonVersion' at '$pythonCmd
+
+\sed -i "s!^pythonCmd=.*!pythonCmd='$pythonCmd'!" install_cp
+\sed -i "s!^pythonVersion=.*!pythonVersion=$pythonVersion!" install_cp
 
 if [ "$pythonVersion" -eq "2" ]; then
     \sed -i '3 a from __future__ import print_function' $instdest/main.py
@@ -81,10 +90,11 @@ pathConfig=$pathConfig'/'$configFile
 \sed -i 's!PYTHON_CMD!'$pythonCmd'!' $instdest/main.py
 \sed -i 's!PATH_CONFIG!'$pathConfig'!' $instdest/constants.py
 \sed -i 's/USER_NAME/'$USER'/' $instdest/constants.py
-\sed -i 's/EDITOR/'$editor'/' $instdest/constants.py
+\sed -i 's!EDITOR!'$editor'!' $instdest/constants.py
 \chmod u+x $instdest/main.py
 
 echo 'user name found: '$USER
+echo 'editor set to: '$editor
 
 echo ''
 
@@ -101,3 +111,4 @@ echo 'done.'
 echo ''
 
 echo 'Installation finished!'
+\mv install_cp "$0"

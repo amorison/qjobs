@@ -13,16 +13,21 @@ pythonVersion=0
 #############################################################################
 
 instdest=$HOME'/.local/share/qjobs'
+echo 'copy sources files to '$instdest
+echo '...'
 mkdir -p $instdest
 \cp src/* $instdest
 instdest=$instdest'/qjobs.py'
+echo 'done.'
+
+echo ''
 
 if [ -z "$qstatCmd" ]; then
     echo 'Looking for qstat...'
     qstatCmd=`command -v qstat`
     if [ -z "$qstatCmd" ]; then
-        echo 'qstat not found, please set qstatCmd variables.'
-        exit 1
+        echo 'qstat not found, please enter its location:'
+        \read -r qstatCmd
     fi
     echo 'qstat found at '$qstatCmd
 else
@@ -48,11 +53,13 @@ if [ -z "$pythonCmd" ]; then
 fi
 
 if [ "$pythonVersion" -eq "0" ]; then
-    echo 'Python not found, please set pythonCmd and pythonVersion variables.'
-    exit 1
+    echo 'Python not found, please enter its location:'
+    \read -r pythonCmd
+    echo 'and the version number (2 or 3):'
+    \read -r pythonVersion
 fi
 
-echo 'Python '$pythonVersion' found at '$pythonCmd
+echo 'will use Python '$pythonVersion' at '$pythonCmd
 
 if [ "$pythonVersion" -eq "2" ]; then
     \sed -i '3 a from __future__ import print_function' $instdest
@@ -80,18 +87,14 @@ echo 'user name found: '$USER
 
 echo ''
 
-$pythonCmd $instdest -c > rc_tmp
+$pythonCmd $instdest -c > $pathConfig
 
-echo 'config file created:'
-\cat rc_tmp
+echo 'config file created at '$pathConfig':'
+\cat $pathConfig
 
-echo 'qjobs will be installed as '$pathScript' ...'
+echo 'linking '$pathScript' ...'
 \ln -s -f $instdest $pathScript
-echo '...done.'
-
-echo 'config file will be moved to '$pathConfig' ...'
-\mv rc_tmp $pathConfig
-echo '...done.'
+echo 'done.'
 
 echo ''
 

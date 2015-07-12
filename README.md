@@ -40,15 +40,15 @@ By default, the installation script does the following:
 You can customize the installation process by editing the first lines of the
 script before running it.
 
-Please use the `$HOME` variable instead of `~` if you change any of these
+__Please use the `$HOME` variable instead of `~` if you change any of these
 locations.  They are expanded and pasted in the installed script, which would
-not be possible with the `~` symbol.
+not be possible with the `~` symbol.__
 
-The variable `pathScript` is the directory where the link to the main module
+The variable `linkDir` is the directory where the link to the main module
 will be created.  Its default value is `$HOME'/bin'`. You may want to choose a
 directory which is in your path.
 
-The variable `scriptFile` is the name of the said link. Its default value is
+The variable `linkName` is the name of the said link. Its default value is
 `'qjobs'`. Hence, if `pathScript` is in your path, you will only need to type
 `qjobs` to launch the program.
 

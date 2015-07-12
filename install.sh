@@ -1,8 +1,8 @@
 #!/bin/sh
 
-# name and location of executable
-pathScript=$HOME'/bin'
-scriptFile='qjobs'
+# name and location of link
+linkDir=$HOME'/bin'
+linkName='qjobs'
 
 # installation directories
 installDir=$HOME'/.local/share'
@@ -33,7 +33,7 @@ done
 
 if [ ! -z "$uflag" ]; then
     echo 'uninstalling...'
-    \rm $pathScript/$scriptFile
+    \rm $linkDir/$linkName
     \rm -rf $pathConfig
     \rm -rf $instdest
     echo 'done.'
@@ -112,10 +112,10 @@ fi
 
 echo ''
 
-\mkdir -p $pathScript
+\mkdir -p $linkDir
 \mkdir -p $pathConfig
 
-pathScript=$pathScript'/'$scriptFile
+linkDir=$linkDir'/'$linkName
 pathConfig=$pathConfig'/qjobs.rc'
 
 \sed -i 's!QSTAT_CMD!'$qstatCmd'!' $instdest/constants.py
@@ -136,8 +136,8 @@ $pythonCmd $instdest/main.py -c > rc_tmp
 echo 'config file created at '$pathConfig':'
 \cat $pathConfig
 
-echo 'linking '$pathScript' ...'
-\ln -s -f $instdest/main.py $pathScript
+echo 'linking '$linkDir' ...'
+\ln -s -f $instdest/main.py $linkDir
 echo 'done.'
 
 echo ''

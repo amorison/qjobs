@@ -5,8 +5,8 @@ pathScript=$HOME'/bin'
 scriptFile='qjobs'
 
 # installation directories
-configDir=$HOME'/.config'
 installDir=$HOME'/.local/share'
+configDir=$HOME'/.config'
 
 # tools location
 qstatCmd=''

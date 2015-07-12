@@ -13,9 +13,26 @@ editor='vim'
 # DO NOT change anything under this line unless you know what you are doing #
 #############################################################################
 
-\cp "$0" install_cp
-
 instdest=$HOME'/.local/share/qjobs'
+
+uflag=
+while getopts u name
+do
+    case $name in
+        u)   uflag=1;;
+        ?)   echo '-u to uninstall'
+             exit 1;;
+    esac
+done
+
+if [ ! -z "$uflag" ]; then
+    echo 'uninstalling...'
+    \rm $pathScript/$scriptFile
+    \rm -rf $instdest
+    echo 'done.'
+    exit 0
+fi
+
 echo 'copy sources files to '$instdest
 echo '...'
 mkdir -p $instdest
@@ -24,6 +41,8 @@ mkdir -p $instdest
 echo 'done.'
 
 echo ''
+
+\cp "$0" install_cp
 
 if [ -z "$qstatCmd" ]; then
     echo 'Looking for qstat...'

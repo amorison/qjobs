@@ -1,9 +1,14 @@
 #!/bin/sh
 
+# name and location of executable
 pathScript=$HOME'/bin'
 scriptFile='qjobs'
-pathConfig=$HOME'/.config/qjobs'
-configFile='qjobs.rc'
+
+# installation directories
+configDir=$HOME'/.config'
+installDir=$HOME'/.local/share'
+
+# tools location
 qstatCmd=''
 pythonCmd=''
 pythonVersion=0
@@ -13,7 +18,8 @@ editor='vim'
 # DO NOT change anything under this line unless you know what you are doing #
 #############################################################################
 
-instdest=$HOME'/.local/share/qjobs'
+pathConfig=$configDir'/qjobs'
+instdest=$installDir'/qjobs'
 
 uflag=
 while getopts u name
@@ -28,6 +34,7 @@ done
 if [ ! -z "$uflag" ]; then
     echo 'uninstalling...'
     \rm $pathScript/$scriptFile
+    \rm -rf $pathConfig
     \rm -rf $instdest
     echo 'done.'
     exit 0
@@ -109,7 +116,7 @@ echo ''
 \mkdir -p $pathConfig
 
 pathScript=$pathScript'/'$scriptFile
-pathConfig=$pathConfig'/'$configFile
+pathConfig=$pathConfig'/qjobs.rc'
 
 \sed -i 's!QSTAT_CMD!'$qstatCmd'!' $instdest/constants.py
 \sed -i 's!PYTHON_CMD!'$pythonCmd'!' $instdest/main.py

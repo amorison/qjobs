@@ -21,7 +21,7 @@ by the installation script `install.sh`.
 - Run the installation script with `./install.sh`.
 - If the script doesn't manage to find qstat and/or Python in your PATH, you
   will be asked to enter their location.
-- You will have to choose an editor (use with the `-e` option of qjobs to edit
+- You will have to choose an editor (used with the `-e` option of qjobs to edit
   the config file), leave an empty line to use vim.
 - That's it! If `~/bin` is in your PATH environment variable, you only have to
   type `qjobs` to launch the wrapper. Enjoy!

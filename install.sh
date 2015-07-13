@@ -52,17 +52,18 @@ echo 'done.'
 echo ''
 
 if [ -z "$qstatCmd" ]; then
-    echo 'looking for qstat...'
     qstatCmd=`command -v qstat`
     if [ -z "$qstatCmd" ]; then
-        echo 'qstat not found, please enter its location:'
+        echo 'qstat not found, please enter its location'\
+        '(leave empty for qstat):'
         \read -r qstatCmd
+        if [ -z "$qstatCmd" ]; then
+            qstatCmd='qstat'
+        fi
     fi
-else
-    echo 'qstat already set'
 fi
 
-echo "will use $qstatCmd"
+echo "qstat cmd set as: $qstatCmd"
 
 echo ''
 
@@ -114,7 +115,7 @@ if [ -z "$usrnm" ]; then
     echo 'user name not found, please enter yours:'
     \read -r usrnm
 fi
-echo 'user name set as: '$usrnm
+echo "user name set as: $usrnm"
 
 echo ''
 
@@ -125,7 +126,7 @@ if [ -z "$editor" ]; then
         editor='vim'
     fi
 fi
-echo 'editor set as: '$editor
+echo "editor set as: $editor"
 
 \mkdir -p $linkDir
 \mkdir -p $pathConfig

@@ -1,16 +1,16 @@
 #!/bin/sh
 
 # name and location of link
-linkDir=$HOME'/bin'
+linkDir="$HOME/bin"
 linkName='qjobs'
 
 # installation directories
-installDir=$HOME'/.local/share'
-configDir=$HOME'/.config'
+installDir="$HOME/.local/share"
+configDir="$HOME/.config"
 
 # tools location
-qstatCmd=''
-pythonCmd=''
+qstatCmd=
+pythonCmd=
 pythonVersion=0
 editor='vim'
 
@@ -18,8 +18,8 @@ editor='vim'
 # DO NOT change anything under this line unless you know what you are doing #
 #############################################################################
 
-pathConfig=$configDir'/qjobs'
-instdest=$installDir'/qjobs'
+pathConfig="$configDir/qjobs"
+instdest="$installDir/qjobs"
 
 uflag=
 while getopts u name
@@ -33,15 +33,17 @@ done
 
 if [ ! -z "$uflag" ]; then
     echo 'uninstalling...'
+    echo 'removing link'
     \rm $linkDir/$linkName
+    echo 'removing config file'
     \rm -rf $pathConfig
+    echo 'removing source files'
     \rm -rf $instdest
     echo 'done.'
     exit 0
 fi
 
-echo 'copy sources files to '$instdest
-echo '...'
+echo "copy sources files to $instdest"
 mkdir -p $instdest
 \rm -rf $instdest/*
 \cp src/* $instdest
@@ -52,22 +54,23 @@ echo ''
 \cp "$0" install_cp
 
 if [ -z "$qstatCmd" ]; then
-    echo 'Looking for qstat...'
+    echo 'looking for qstat...'
     qstatCmd=`command -v qstat`
     if [ -z "$qstatCmd" ]; then
         echo 'qstat not found, please enter its location:'
         \read -r qstatCmd
     fi
-    echo 'will use '$qstatCmd' as qstat'
 else
-    echo 'qstat already set at '$qstatCmd
+    echo 'qstat already set'
 fi
+
+echo "will use $qstatCmd"
 
 \sed -i "s!^qstatCmd=.*!qstatCmd='$qstatCmd'!" install_cp
 
 echo ''
 
-echo 'Looking for Python...'
+echo 'looking for Python...'
 
 if [ -z "$pythonCmd" ]; then
     pythonCmd=`command -v python3`
@@ -92,7 +95,7 @@ if [ "$pythonVersion" -eq "0" ]; then
     \read -r pythonVersion
 fi
 
-echo 'will use Python '$pythonVersion' at '$pythonCmd
+echo "will use $pythonCmd (Python $pythonVersion)"
 
 \sed -i "s!^pythonCmd=.*!pythonCmd='$pythonCmd'!" install_cp
 \sed -i "s!^pythonVersion=.*!pythonVersion=$pythonVersion!" install_cp
@@ -115,14 +118,14 @@ echo ''
 \mkdir -p $linkDir
 \mkdir -p $pathConfig
 
-linkDir=$linkDir'/'$linkName
-pathConfig=$pathConfig'/qjobs.rc'
+linkDir="$linkDir/$linkName"
+pathConfig="$pathConfig/qjobs.rc"
 
-\sed -i 's!QSTAT_CMD!'$qstatCmd'!' $instdest/constants.py
-\sed -i 's!PYTHON_CMD!'$pythonCmd'!' $instdest/main.py
-\sed -i 's!PATH_CONFIG!'$pathConfig'!' $instdest/constants.py
-\sed -i 's/USER_NAME/'$USER'/' $instdest/constants.py
-\sed -i 's!EDITOR!'$editor'!' $instdest/constants.py
+\sed -i "s!QSTAT_CMD!$qstatCmd!" $instdest/constants.py
+\sed -i "s!PYTHON_CMD!$pythonCmd!" $instdest/main.py
+\sed -i "s!PATH_CONFIG!$pathConfig!" $instdest/constants.py
+\sed -i "s/USER_NAME/$USER/" $instdest/constants.py
+\sed -i "s!EDITOR!$editor!" $instdest/constants.py
 \chmod u+x $instdest/main.py
 
 echo 'user name found: '$USER
@@ -136,11 +139,11 @@ $pythonCmd $instdest/main.py -c > rc_tmp
 echo 'config file created at '$pathConfig':'
 \cat $pathConfig
 
-echo 'linking '$linkDir' ...'
+echo "linking $linkDir"
 \ln -s -f $instdest/main.py $linkDir
 echo 'done.'
 
 echo ''
 
-echo 'Installation finished!'
+echo 'installation finished!'
 \mv install_cp "$0"

@@ -12,7 +12,7 @@ configDir="$HOME/.config"
 qstatCmd=
 pythonCmd=
 pythonVersion=0
-editor='vim'
+editor=
 
 #############################################################################
 # DO NOT change anything under this line unless you know what you are doing #
@@ -51,8 +51,6 @@ echo 'done.'
 
 echo ''
 
-\cp "$0" install_cp
-
 if [ -z "$qstatCmd" ]; then
     echo 'looking for qstat...'
     qstatCmd=`command -v qstat`
@@ -65,8 +63,6 @@ else
 fi
 
 echo "will use $qstatCmd"
-
-\sed -i "s!^qstatCmd=.*!qstatCmd='$qstatCmd'!" install_cp
 
 echo ''
 
@@ -97,8 +93,6 @@ fi
 
 echo "will use $pythonCmd (Python $pythonVersion)"
 
-\sed -i "s!^pythonCmd=.*!pythonCmd='$pythonCmd'!" install_cp
-\sed -i "s!^pythonVersion=.*!pythonVersion=$pythonVersion!" install_cp
 
 if [ "$pythonVersion" -eq "2" ]; then
     \sed -i '3 a from __future__ import print_function' $instdest/main.py
@@ -115,6 +109,24 @@ fi
 
 echo ''
 
+usrnm=$USER
+if [ -z "$usrnm" ]; then
+    echo 'user name not found, please enter yours:'
+    \read -r usrnm
+fi
+echo 'user name set as: '$usrnm
+
+echo ''
+
+if [ -z "$editor" ]; then
+    echo 'please choose an editor (leave empty for vim):'
+    \read -r editor
+    if [ -z "$editor" ]; then
+        editor='vim'
+    fi
+fi
+echo 'editor set as: '$editor
+
 \mkdir -p $linkDir
 \mkdir -p $pathConfig
 
@@ -128,15 +140,12 @@ pathConfig="$pathConfig/qjobs.rc"
 \sed -i "s!EDITOR!$editor!" $instdest/constants.py
 \chmod u+x $instdest/main.py
 
-echo 'user name found: '$USER
-echo 'editor set to: '$editor
-
 echo ''
 
 $pythonCmd $instdest/main.py -c > rc_tmp
 \mv rc_tmp $pathConfig
 
-echo 'config file created at '$pathConfig':'
+echo "config file created at $pathConfig:"
 \cat $pathConfig
 
 echo "linking $linkDir"
@@ -146,4 +155,16 @@ echo 'done.'
 echo ''
 
 echo 'installation finished!'
+
+echo ''
+
+\cp "$0" install_cp
+
+\sed -i "s!^qstatCmd=.*!qstatCmd='$qstatCmd'!" install_cp
+\sed -i "s!^pythonCmd=.*!pythonCmd='$pythonCmd'!" install_cp
+\sed -i "s!^pythonVersion=.*!pythonVersion=$pythonVersion!" install_cp
+\sed -i "s!^editor=.*!editor='$editor'!" install_cp
+
 \mv install_cp "$0"
+
+echo 'install script updated'

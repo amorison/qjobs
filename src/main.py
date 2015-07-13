@@ -24,7 +24,7 @@ def main():
     if args.file:
         qstat_out = args.file
     else:
-        qstat_out = Popen(constants.qstat_cmd +
+        qstat_out = Popen(args.qstat_cmd +
                           ' -u "' + args.users + '" -xml -r',
                           shell=True, stdout=PIPE).stdout
 

@@ -22,8 +22,6 @@ itms = OrderedDict((
 
 reversed_itms = 'psel'
 
-qstat_cmd = 'QSTAT_CMD'
-
 path_config = 'PATH_CONFIG'
 
 dflt_section = 'Defaults'
@@ -37,5 +35,6 @@ default_config = OrderedDict((
     ('sep_tot', '[     ]'),
     ('sep', '[   ]'),
     ('users', 'USER_NAME'),
-    ('editor', 'EDITOR')
+    ('editor', 'EDITOR'),
+    ('qstat_cmd', 'QSTAT_CMD')
     ))

@@ -12,7 +12,7 @@ class Job:
     """Job class with hash and comparison based on job id"""
 
     def __init__(self, dct):
-        """dct must contains a 'i' key for hash and comparison"""
+        """create a job class with the xml 'joblist' tree"""
         self.dct = dct
         if 'i' not in dct:
             raise ValueError("dct must contains a 'i' key")

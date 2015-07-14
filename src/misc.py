@@ -1,5 +1,7 @@
 """miscellaneous functions"""
 
+from datetime import datetime, timedelta
+
 
 def rm_brackets(string):
     """remove [ ] if at 1st and last char"""
@@ -12,12 +14,28 @@ def rm_brackets(string):
     return string
 
 
+class ElapsedTime(timedelta):
+    """timedelta with custom str conversion"""
+
+    fmt = ''
+
+    def __str__(self):
+        """str conversion made following the
+        user-defined format"""
+        dct = {}
+        dct['d'] = self.days
+        dct['h'], rmd = divmod(self.seconds, 3600)
+        dct['m'], dct['s'] = divmod(rmd, 60)
+        dct['S'] = 86400 * self.days + self.seconds
+        dct['M'] = dct['S'] // 60
+        dct['H'] = dct['S'] // 3600
+        dct['D'] = dct['S'] / 86400.
+        return self.fmt.format(**dct)
+
 def elapsed_time(start_time, fmt):
     """return formatted elapsed time since start time"""
 
-    from datetime import datetime
-
-    delta = datetime.today() - \
+    delta = datetime.today() - 
         datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S')
     dct = {}
     dct['d'] = delta.days
@@ -27,7 +45,6 @@ def elapsed_time(start_time, fmt):
     dct['M'] = dct['S'] // 60
     dct['H'] = dct['S'] // 3600
     dct['D'] = dct['S'] / 86400.
-
     return fmt.format(**dct)
 
 
@@ -54,12 +71,8 @@ def get_itms(jobs_list, args):
         if job['k']:
             job['q'], job['d'] = job['k'].rsplit('@')
 
-        if job['t']:
-            job['t'] = job['t'].replace('T', ' ')
-            job['e'] = elapsed_time(job['t'], args.elapsed_format)
-        else:
-            job['t'] = 'not set'
-            job['e'] = 'not set'
+        job['t'] = job['t'].replace('T', ' ')
+        job['e'] = elapsed_time(job['t'], args.elapsed_format)
 
         for itm in set(args.total.lower()):
             if itm not in job_counter:

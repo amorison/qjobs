@@ -4,10 +4,13 @@
     JobGroup: container which can contains JobGroups and JobLists"""
 
 from bisect import bisect_left
+from collections import Counter
+from functools import total_ordering
 
 import constants
 
 
+@total_ordering
 class Job:
     """Job class with hash and comparison based on job id"""
 
@@ -26,13 +29,15 @@ class Job:
                 if self.dct[itm]:
                     break
 
+        self.dct['i'] = int(self.dct['i'])
+        self.idt = dct['i']
+
         if self.dct['k']:
             self.dct['q'], self.dct['d'] = self.dct['k'].rsplit('@')
 
         self.dct['t'], self.dct['e'] = time_handler(self.dct['t'],
                                                     args.start_format,
                                                     args.elapsed_format)
-        self.idt = dct['i']
 
     def __hash__(self):
         """hash based on job id"""
@@ -42,9 +47,9 @@ class Job:
         """comparison based on job id"""
         return isinstance(other, self.__class__) and self.idt == other.idt
 
-    def __ne__(self, other):
+    def __lt__(self, other):
         """comparison based on job id"""
-        return not self.__eq__(other)
+        return isinstance(other, self.__class__) and self.idt < other.idt
 
     def get(self, itm):
         """get job propriety"""
@@ -61,48 +66,45 @@ class JobList:
 
     def __init__(self, job_list):
         """constructor expects a list of Job"""
-        self.jobset = set(job_list)
+        self.jobset = sorted(set(job_list))
+        self.njobs = len(self.jobset)
         self.width = {}
         self.total = {}
         for itm in constants.itms:
-            self.width[itm] = sorted(len(job.get(itm))
+            self.width[itm] = sorted(len(str(job.get(itm)))
                                      for job in self.jobset)
-            self.total[itm] = {}
-            for value in set(job.get(itm) for job in self.jobset):
-                self.total[itm][value] = set(job for job in self.jobset
-                                             if job.get(itm) == value)
+            self.total[itm] = Counter(str(job.get(itm))
+                                      for job in self.jobset)
 
     def add(self, new_job):
         """add a job, update width and total, and erase the previous
         existing one with the same id if needed"""
 
-        old_job = None
-        for job in self.jobset:
-            if new_job == job:
-                old_job = job
+        # will need to recompute completely the elapsed time due to its
+        # volatile nature...
 
-        if old_job:
+        idx = bisect_left(self.jobset, new_job)
+        old_job = self.jobset[idx]
+
+        if new_job == old_job:
             for itm in constants.itms:
-                jitm = old_job.get(itm)
+                jitm = str(old_job.get(itm))
                 lgt = len(jitm)
                 wlist = self.width[itm]
-                wlist.pop(bisect_left(wlist, lgt))
+                del wlist[bisect_left(wlist, lgt)]
 
-                tlist = self.total[itm]
-                tlist[jitm].remove(old_job)
-                if not tlist[jitm]:
-                    tlist.pop(jitm)
-            self.jobset.remove(old_job)
+                self.total[itm] -= Counter([jitm])
+            del self.jobset[idx]
 
         for itm in constants.itms:
-            jitm = new_job.get(itm)
+            jitm = str(new_job.get(itm))
             lgt = len(jitm)
             wlist = self.width[itm]
             wlist.insert(bisect_left(wlist, lgt), lgt)
 
-            self.total[itm][jitm].add(new_job)
+            self.total[itm] += Counter([jitm])
 
-        self.jobset.add(new_job)
+        self.jobset.insert(idx, new_job)
 
     def rep(self, fmt):
         """handles the representation of the entire list"""

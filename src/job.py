@@ -73,7 +73,7 @@ class JobList:
         for itm in constants.itms:
             self.width[itm] = sorted(len(str(job.get(itm)))
                                      for job in self.jobset)
-            self.total[itm] = Counter(str(job.get(itm))
+            self.total[itm] = Counter(job.get(itm)
                                       for job in self.jobset)
 
     def add(self, new_job):
@@ -88,8 +88,8 @@ class JobList:
 
         if new_job == old_job:
             for itm in constants.itms:
-                jitm = str(old_job.get(itm))
-                lgt = len(jitm)
+                jitm = old_job.get(itm)
+                lgt = len(str(jitm))
                 wlist = self.width[itm]
                 del wlist[bisect_left(wlist, lgt)]
 
@@ -97,8 +97,8 @@ class JobList:
             del self.jobset[idx]
 
         for itm in constants.itms:
-            jitm = str(new_job.get(itm))
-            lgt = len(jitm)
+            jitm = new_job.get(itm)
+            lgt = len(str(jitm))
             wlist = self.width[itm]
             wlist.insert(bisect_left(wlist, lgt), lgt)
 

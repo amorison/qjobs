@@ -16,11 +16,10 @@ def rm_brackets(string):
 
 class ElapsedTime(timedelta):
     """timedelta with custom str conversion"""
-
     fmt = ''
 
     def __str__(self):
-        """str conversion made following the
+        """str conversion made according to the
         user-defined format"""
         dct = {}
         dct['d'] = self.days
@@ -32,10 +31,37 @@ class ElapsedTime(timedelta):
         dct['D'] = dct['S'] / 86400.
         return self.fmt.format(**dct)
 
+
+class StartTime(datetime):
+    """datetime with custom str conversion"""
+    fmt = ''
+
+    def __str__(self):
+        """str conversion made according to the
+        user-defined format"""
+        return self.strftime(self.fmt)
+
+
+def time_handler(start_time, start_fmt, elaps_fmt):
+    """return StartTime, ElapsedTime tuple using
+    start/sub time string"""
+    start_time = datetime.strptime(start_time, '%Y-%m-%dT%H:%M:%S')
+    start_time = StartTime(start_time.year, start_time.month,
+                           start_time.day, start_time.hour,
+                           start_time.minute, start_time.second)
+    start_time.fmt = start_fmt
+
+    delta = datetime.today() - start_time
+    delta = ElapsedTime(delta.days, delta.seconds, 0)
+    delta.fmt = elaps_fmt
+
+    return start_time, delta
+
+
 def elapsed_time(start_time, fmt):
     """return formatted elapsed time since start time"""
 
-    delta = datetime.today() - 
+    delta = datetime.today() - \
         datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S')
     dct = {}
     dct['d'] = delta.days

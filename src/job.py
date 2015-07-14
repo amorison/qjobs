@@ -11,11 +11,27 @@ import constants
 class Job:
     """Job class with hash and comparison based on job id"""
 
-    def __init__(self, dct):
-        """create a job class with the xml 'joblist' tree"""
-        self.dct = dct
-        if 'i' not in dct:
-            raise ValueError("dct must contains a 'i' key")
+    def __init__(self, job_xml, args):
+        """create a job with the xml 'joblist' tree"""
+
+        from misc import time_handler
+
+        self.dct = {}
+        for itm, itmtp in constants.itms.items():
+            self.dct[itm] = ''
+            for tag in itmtp.xml_tag:
+                elts = job_xml.iter(tag)
+                self.dct[itm] = ', '.join(sorted(elt.text for elt in elts
+                                                 if elt.text))
+                if self.dct[itm]:
+                    break
+
+        if self.dct['k']:
+            self.dct['q'], self.dct['d'] = self.dct['k'].rsplit('@')
+
+        self.dct['t'], self.dct['e'] = time_handler(self.dct['t'],
+                                                    args.start_format,
+                                                    args.elapsed_format)
         self.idt = dct['i']
 
     def __hash__(self):

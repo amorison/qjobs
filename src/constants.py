@@ -20,7 +20,7 @@ itms = OrderedDict((
     ('l', Itmtp('number of slots used', ['slots']))
     ))
 
-reversed_itms = 'psel'
+reversed_itms = 'psl'
 
 path_config = 'PATH_CONFIG'
 

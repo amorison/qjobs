@@ -117,12 +117,18 @@ class JobList:
             self.total[itm] = Counter(job.get(itm)
                                       for job in self.jobset)
 
-    def rep(self, fmt):
+    def rep(self):
         """handle the representation of the entire list"""
-        # will have to work a bit on the format to put the width of the fields
-        # will have to sort jobset
         # replace output.out
-        for job in self.jobset:
+
+        jobset_out = sorted(self.jobset)
+        for itm in args.sort:
+            if itm in constants.itms:
+                jobset_out.sort(key=lambda job: job.get(itm),
+                                reverse=itm in constants.reversed_itms)
+
+        fmt = args.out_format.format(self.width)
+        for job in jobset_out:
             print(job.rep(fmt))
 
     def rep_tot(self, tot_list, fmt):

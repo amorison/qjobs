@@ -13,6 +13,8 @@ def add_args(parser, defaults):
                         help='total before out')
     parser.add_argument('-o', '--out', nargs='?', const='', metavar='ITEMS',
                         help='specify which items are displayed.')
+    parser.add_argument('-O', '--out_format', nargs='?', const='', metavar='FMT',
+                        help='specify format of job list output')
     parser.add_argument('-t', '--total', nargs='?', const='', metavar='ITEMS',
                         help='specify items for which you want \
                                 to count the jobs.')
@@ -117,5 +119,9 @@ def parse():
 
     args.sep = rm_brackets(args.sep)
     args.sep_tot = rm_brackets(args.sep_tot)
+
+    if not args.out_format:
+        args.out_format = args.sep.join('{{' + itm + ':{' + itm + '}}}'
+                                        for itm in args.out)
 
     return args

@@ -42,7 +42,7 @@ class StartTime(datetime):
         return self.strftime(self.fmt)
 
 
-def time_handler(start_time, start_fmt, elaps_fmt):
+def time_handler(start_time, start_fmt, elaps_fmt, today):
     """return StartTime, ElapsedTime tuple using
     start/sub time string"""
     start_time = datetime.strptime(start_time, '%Y-%m-%dT%H:%M:%S')
@@ -51,7 +51,7 @@ def time_handler(start_time, start_fmt, elaps_fmt):
                            start_time.minute, start_time.second)
     start_time.fmt = start_fmt
 
-    delta = datetime.today() - start_time
+    delta = today - start_time
     delta = ElapsedTime(delta.days, delta.seconds, 0)
     delta.fmt = elaps_fmt
 

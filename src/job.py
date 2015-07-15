@@ -5,6 +5,7 @@
 
 from bisect import bisect_left
 from collections import Counter
+from datetime import datetime
 from functools import total_ordering
 
 import constants
@@ -14,7 +15,7 @@ import constants
 class Job:
     """Job class with hash and comparison based on job id"""
 
-    def __init__(self, job_xml, args):
+    def __init__(self, job_xml, args, today):
         """create a job with the xml 'joblist' tree"""
 
         from misc import time_handler
@@ -35,9 +36,7 @@ class Job:
         if self.dct['k']:
             self.dct['q'], self.dct['d'] = self.dct['k'].rsplit('@')
 
-        self.dct['t'], self.dct['e'] = time_handler(self.dct['t'],
-                                                    args.start_format,
-                                                    args.elapsed_format)
+        self.update(today)
 
     def __hash__(self):
         """hash based on job id"""
@@ -59,6 +58,11 @@ class Job:
         """representation of job based on format fmt"""
         return fmt.format(**self.dct)
 
+    def update(self, today):
+        self.dct['t'], self.dct['e'] = time_handler(self.dct['t'],
+                                                    args.start_format,
+                                                    args.elapsed_format,
+                                                    today)
 
 class JobList:
     """JobList class which handle the width of the different
@@ -70,21 +74,18 @@ class JobList:
         self.njobs = len(self.jobset)
         self.width = {}
         self.total = {}
-        for itm in constants.itms:
-            self.width[itm] = sorted(len(str(job.get(itm)))
-                                     for job in self.jobset)
-            self.total[itm] = Counter(job.get(itm)
-                                      for job in self.jobset)
+        self.count()
 
     def add(self, new_job):
         """add a job, update width and total, and erase the previous
         existing one with the same id if needed"""
 
-        # will need to recompute completely the elapsed time due to its
-        # volatile nature...
-
         idx = bisect_left(self.jobset, new_job)
         old_job = self.jobset[idx]
+
+        today = datetime.today()
+        self.update(today)
+        new_job.update(today)
 
         if new_job == old_job:
             for itm in constants.itms:
@@ -106,6 +107,13 @@ class JobList:
 
         self.jobset.insert(idx, new_job)
 
+    def count(self):
+        for itm in constants.itms:
+            self.width[itm] = sorted(len(str(job.get(itm)))
+                                     for job in self.jobset)
+            self.total[itm] = Counter(job.get(itm)
+                                      for job in self.jobset)
+
     def rep(self, fmt):
         """handles the representation of the entire list"""
         # will have to work a bit on the format to put the width of the fields
@@ -117,7 +125,14 @@ class JobList:
     def rep_tot(self, tot_list, fmt):
         """handles the representation of the totals"""
         # will need args.total -> tot_list
+        # will need to group time and elapsed time
+        # with same str()
         pass
+
+    def update(self, today):
+        for job in self.jobset:
+            job.update(today)
+        self.count()
 
 
 class JobGroup:

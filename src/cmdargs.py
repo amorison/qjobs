@@ -13,7 +13,8 @@ def add_args(parser, defaults):
                         help='total before out')
     parser.add_argument('-o', '--out', nargs='?', const='', metavar='ITEMS',
                         help='specify which items are displayed.')
-    parser.add_argument('-O', '--out_format', nargs='?', const='', metavar='FMT',
+    parser.add_argument('-O', '--out_format',
+                        nargs='?', const='', metavar='FMT',
                         help='specify format of job list output')
     parser.add_argument('-t', '--total', nargs='?', const='', metavar='ITEMS',
                         help='specify items for which you want \

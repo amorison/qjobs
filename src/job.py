@@ -127,11 +127,11 @@ class JobList:
                 jobset_out.sort(key=lambda job: job.get(itm),
                                 reverse=itm in constants.reversed_itms)
 
-        fmt = args.out_format.format(**self.width)
+        fmt = self.args.out_format.format(**self.width)
         for job in jobset_out:
             print(job.rep(fmt))
 
-    def rep_tot(self, tot_list):
+    def rep_tot(self):
         """handle the representation of the totals"""
 
         from itertools import zip_longest as ziplgst
@@ -153,8 +153,8 @@ class JobList:
 
             mlk = max(len(str(k)) for k, _ in dct)
             mlv = max(len(str(v)) for _, v in dct)
-            nfld = (self.args.width_tot+len(args.sep_tot)) // \
-                   (mlk+mlv+2+len(args.sep_tot))
+            nfld = (self.args.width_tot+len(self.args.sep_tot)) // \
+                   (mlk+mlv+2+len(self.args.sep_tot))
             if nfld == 0:
                 nfld = 1
 

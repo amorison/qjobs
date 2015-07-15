@@ -122,7 +122,7 @@ class JobList:
         # replace output.out
 
         jobset_out = sorted(self.jobset)
-        for itm in args.sort:
+        for itm in self.args.sort:
             if itm in constants.itms:
                 jobset_out.sort(key=lambda job: job.get(itm),
                                 reverse=itm in constants.reversed_itms)
@@ -131,12 +131,42 @@ class JobList:
         for job in jobset_out:
             print(job.rep(fmt))
 
-    def rep_tot(self, tot_list, fmt):
+    def rep_tot(self, tot_list):
         """handle the representation of the totals"""
-        # will need args.total -> tot_list
-        # will need to group time and elapsed time
-        # with same str()
-        pass
+
+        from itertools import zip_longest as ziplgst
+        from math import ceil
+
+        print('tot: {}'.format(len(self.jobset)))
+        for itm in self.args.total:
+            dct = self.total[itm.lower()]
+            if '' in dct:
+                dct['not set'] = dct.pop('')
+
+            dct = sorted(dct.items(),
+                         key=lambda x: x[0],
+                         reverse=itm.lower() in constants.reversed_itms)
+            if itm.isupper():
+                dct = sorted(dct,
+                             key=lambda x: x[1],
+                             reverse=True)
+
+            mlk = max(len(str(k)) for k, _ in dct)
+            mlv = max(len(str(v)) for _, v in dct)
+            nfld = (self.args.width_tot+len(args.sep_tot)) // \
+                   (mlk+mlv+2+len(args.sep_tot))
+            if nfld == 0:
+                nfld = 1
+
+            dct = ziplgst(*(iter(dct), ) * int(ceil(len(dct)/float(nfld))),
+                          fillvalue=(None, None))
+            dct = zip(*dct)
+
+            print()
+            for line in dct:
+                print(*('{}: {}'.format(str(k).ljust(mlk), str(v).rjust(mlv))
+                        for k, v in line if (k, v) != (None, None)),
+                      sep=self.args.sep_tot)
 
     def update(self, today):
         """update elapsed times, using today as reference"""

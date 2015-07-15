@@ -127,7 +127,11 @@ class JobList:
                 jobset_out.sort(key=lambda job: job.get(itm),
                                 reverse=itm in constants.reversed_itms)
 
-        fmt = self.args.out_format.format(**self.width)
+        wdt = {}
+        for itm in constants.itms:
+            wdt[itm] = self.width[itm][-1]
+
+        fmt = self.args.out_format.format(**wdt)
         for job in jobset_out:
             print(job.rep(fmt))
 

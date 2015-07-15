@@ -7,13 +7,13 @@ import sys
 def main():
     """execute qstat and produces output according to chosen options."""
 
+    from datetime import datetime
     from subprocess import Popen, PIPE
     import xml.etree.ElementTree as ET
 
     import cmdargs
     import constants
-    from misc import get_itms
-    import output
+    from job import Job, JobList, JobGroup
 
     args = cmdargs.parse()
     if args.items:
@@ -30,24 +30,28 @@ def main():
 
     qstat_out = ET.parse(qstat_out).getroot().iter('job_list')
 
-    alljobs, job_counter = get_itms(qstat_out, args)
-
-    if not alljobs:
+    if not qstat_out:
         if not args.mute:
             print('No pending or running job.')
     else:
+        alljobs = []
+        today = datetime.today()
+        for j in qstat_out:
+            alljobs.append(Job(j, args, today))
+        alljobs = JobList(alljobs, args)
+
         if args.out and not args.reverse:
-            output.out(alljobs, args)
+            alljobs.rep()
         if args.total and args.reverse:
-            output.total(alljobs, job_counter, args)
+            alljobs.rep_tot()
 
         if args.out and args.total:
             print()
 
         if args.total and not args.reverse:
-            output.total(alljobs, job_counter, args)
+            alljobs.rep_tot()
         if args.out and args.reverse:
-            output.out(alljobs, args)
+            alljobs.rep()
 
 
 if __name__ == '__main__':

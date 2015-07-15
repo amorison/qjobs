@@ -9,6 +9,7 @@ from datetime import datetime
 from functools import total_ordering
 
 import constants
+from misc import time_handler
 
 
 @total_ordering
@@ -17,8 +18,6 @@ class Job:
 
     def __init__(self, job_xml, args, today):
         """create a job with the xml 'joblist' tree"""
-
-        from misc import time_handler
 
         self.dct = {}
         for itm, itmtp in constants.itms.items():
@@ -31,12 +30,12 @@ class Job:
                     break
 
         self.dct['i'] = int(self.dct['i'])
-        self.idt = dct['i']
+        self.idt = self.dct['i']
 
         if self.dct['k']:
             self.dct['q'], self.dct['d'] = self.dct['k'].rsplit('@')
 
-        self.update(today)
+        self.update(today, args)
 
     def __hash__(self):
         """hash based on job id"""
@@ -58,22 +57,25 @@ class Job:
         """representation of job based on format fmt"""
         return fmt.format(**self.dct)
 
-    def update(self, today):
+    def update(self, today, args):
+        """update elapsed time field, using today as reference"""
         self.dct['t'], self.dct['e'] = time_handler(self.dct['t'],
                                                     args.start_format,
                                                     args.elapsed_format,
                                                     today)
 
+
 class JobList:
-    """JobList class which handle the width of the different
+    """JobList class which handles the width of the different
     fields and the job counting for total"""
 
-    def __init__(self, job_list):
+    def __init__(self, job_list, args):
         """constructor expects a list of Job"""
         self.jobset = sorted(set(job_list))
         self.njobs = len(self.jobset)
         self.width = {}
         self.total = {}
+        self.args = args
         self.count()
 
     def add(self, new_job):
@@ -85,7 +87,7 @@ class JobList:
 
         today = datetime.today()
         self.update(today)
-        new_job.update(today)
+        new_job.update(today, self.args)
 
         if new_job == old_job:
             for itm in constants.itms:
@@ -108,6 +110,7 @@ class JobList:
         self.jobset.insert(idx, new_job)
 
     def count(self):
+        """determine width of fields and count total"""
         for itm in constants.itms:
             self.width[itm] = sorted(len(str(job.get(itm)))
                                      for job in self.jobset)
@@ -115,7 +118,7 @@ class JobList:
                                       for job in self.jobset)
 
     def rep(self, fmt):
-        """handles the representation of the entire list"""
+        """handle the representation of the entire list"""
         # will have to work a bit on the format to put the width of the fields
         # will have to sort jobset
         # replace output.out
@@ -123,15 +126,16 @@ class JobList:
             print(job.rep(fmt))
 
     def rep_tot(self, tot_list, fmt):
-        """handles the representation of the totals"""
+        """handle the representation of the totals"""
         # will need args.total -> tot_list
         # will need to group time and elapsed time
         # with same str()
         pass
 
     def update(self, today):
+        """update elapsed times, using today as reference"""
         for job in self.jobset:
-            job.update(today)
+            job.update(today, self.args)
         self.count()
 
 

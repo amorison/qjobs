@@ -30,14 +30,15 @@ def main():
 
     qstat_out = ET.parse(qstat_out).getroot().iter('job_list')
 
-    if not qstat_out:
+    alljobs = []
+    today = datetime.today()
+    for j in qstat_out:
+        alljobs.append(Job(j, args, today))
+
+    if not alljobs:
         if not args.mute:
             print('No pending or running job.')
     else:
-        alljobs = []
-        today = datetime.today()
-        for j in qstat_out:
-            alljobs.append(Job(j, args, today))
         alljobs = JobList(alljobs, args)
 
         if args.out and not args.reverse:

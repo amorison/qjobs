@@ -122,9 +122,8 @@ class JobList:
 
         jobset_out = sorted(self.jobset)
         for itm in self.args.sort:
-            if itm in constants.itms:
-                jobset_out.sort(key=lambda job: job.get(itm),
-                                reverse=itm in self.args.reversed_itms)
+            jobset_out.sort(key=lambda job: job.get(itm),
+                            reverse=itm in self.args.reversed_itms)
 
         wdt = {}
         for itm in constants.itms:

@@ -57,7 +57,7 @@ def parse():
 
     import configfile
     import constants
-    from misc import rm_brackets
+    from misc import itmfilter, rm_brackets
 
     parser = argparse.ArgumentParser(
         description='qstat wrapper for better output. \
@@ -84,10 +84,9 @@ def parse():
     parser = add_args(parser, configfile.read(args))
     args = parser.parse_args(remaining_argv)
 
-    args.out = ''.join((itm for itm in args.out
-                        if itm in constants.itms))
-    args.total = ''.join((itm for itm in args.total
-                          if itm.lower() in constants.itms))
+    args.out = itmfilter(args.out)
+    args.total = itmfilter(args.total, True)
+    args.sort = itmfilter(args.sort)
 
     if config_to_stdout:
         configfile.write(vars(args), sys.stdout)

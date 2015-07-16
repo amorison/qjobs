@@ -33,7 +33,7 @@ class ElapsedTime(timedelta):
 
     def __format__(self, fmt_spec):
         """formatting conversion"""
-        return self.__str__()
+        return self.__str__().__format__(fmt_spec)
 
 
 class StartTime(datetime):
@@ -47,7 +47,7 @@ class StartTime(datetime):
 
     def __format__(self, fmt_spec):
         """formatting conversion"""
-        return self.__str__()
+        return self.__str__().__format__(fmt_spec)
 
 
 def time_handler(start_time, start_fmt, elaps_fmt, today):

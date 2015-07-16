@@ -15,7 +15,7 @@ def read(args):
         config_file = constants.path_config
 
     try:
-        conf_parser = config_parser(interpolation=None)
+        conf_parser = config_parser()
         conf_parser.read(config_file)
         defaults = constants.OrderedDict(
             conf_parser.items(constants.dflt_section))
@@ -39,7 +39,7 @@ def write(args, out_stream):
 
     import sys
 
-    config = config_parser(interpolation=None)
+    config = config_parser()
     config.add_section(constants.dflt_section)
     for opt in constants.default_config:
         config.set(constants.dflt_section, opt, str(args[opt]).strip())

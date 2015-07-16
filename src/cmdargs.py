@@ -121,6 +121,7 @@ def parse():
     args.sep = rm_brackets(args.sep)
     args.sep_tot = rm_brackets(args.sep_tot)
 
+    args.start_format = args.start_format.replace('{', '%').replace('}', '')
     if not args.out_format:
         args.out_format = args.sep.join('{{' + itm + ':{' + itm + '}}}'
                                         for itm in args.out)

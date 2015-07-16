@@ -30,7 +30,7 @@ default_config = OrderedDict((
     ('sort', 'ips'),
     ('reversed_itms', 'psl'),
     ('out_format', ''),
-    ('start_format', '%Y-%m-%d %H:%M:%S'),
+    ('start_format', '{Y}-{m}-{d} {H}:{M}:{S}'),
     ('elapsed_format', '{H:03d}:{m:02d} ({D:.2f} days)'),
     ('width_tot', 120),
     ('sep_tot', '[     ]'),

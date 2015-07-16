@@ -119,7 +119,6 @@ class JobList:
 
     def rep(self):
         """handle the representation of the entire list"""
-        # replace output.out
 
         jobset_out = sorted(self.jobset)
         for itm in self.args.sort:
@@ -150,6 +149,15 @@ class JobList:
             dct = sorted(dct.items(),
                          key=lambda x: x[0],
                          reverse=itm.lower() in constants.reversed_itms)
+            if itm.lower() in 'te':
+                dct_tmp = ((str(k), v) for k, v in dct)
+                dct = [next(dct_tmp)]
+                for k, v in dct_tmp:
+                    if dct[-1][0] == k:
+                        dct[-1] = k, dct[-1][1] + v
+                    else:
+                        dct.append((k, v))
+
             if itm.isupper():
                 dct = sorted(dct,
                              key=lambda x: x[1],

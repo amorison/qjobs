@@ -124,7 +124,7 @@ class JobList:
         for itm in self.args.sort:
             if itm in constants.itms:
                 jobset_out.sort(key=lambda job: job.get(itm),
-                                reverse=itm in constants.reversed_itms)
+                                reverse=itm in self.args.reversed_itms)
 
         wdt = {}
         for itm in constants.itms:
@@ -148,7 +148,7 @@ class JobList:
 
             dct = sorted(dct.items(),
                          key=lambda x: x[0],
-                         reverse=itm.lower() in constants.reversed_itms)
+                         reverse=itm.lower() in self.args.reversed_itms)
             if itm.lower() in 'te':
                 dct_tmp = ((str(k), v) for k, v in dct)
                 dct = [next(dct_tmp)]

@@ -20,8 +20,6 @@ itms = OrderedDict((
     ('l', Itmtp('number of slots used', ['slots']))
     ))
 
-reversed_itms = 'psl'
-
 path_config = 'PATH_CONFIG'
 
 dflt_section = 'Defaults'
@@ -30,6 +28,7 @@ default_config = OrderedDict((
     ('out', 'instq'),
     ('total', 's'),
     ('sort', 'ips'),
+    ('reversed_itms', 'psl'),
     ('out_format', ''),
     ('start_format', '%Y-%m-%d %H:%M:%S'),
     ('elapsed_format', '{H:03d}:{m:02d} ({D:.2f} days)'),

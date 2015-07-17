@@ -50,7 +50,7 @@ locations.  They are expanded and pasted in the installed script, which would
 not be possible with the `~` symbol.__
 
 The variable `linkDir` is the directory where the link to the main module
-will be created.  Its default value is `$HOME'/bin'`. You may want to choose a
+will be created.  Its default value is `"$HOME/bin"`. You may want to choose a
 directory which is in your path.
 
 The variable `linkName` is the name of the said link. Its default value is
@@ -58,15 +58,15 @@ The variable `linkName` is the name of the said link. Its default value is
 `qjobs` to launch the program.
 
 The variable `installDir` is the name of the directory where the Python modules
-will be copied. Its default value is `$HOME'/.local/share'`.
+will be copied. Its default value is `"$HOME/.local/share"`.
 
 The variable `configDir` is the name of the directory where the config file
-will be copied. Its default value is `$HOME'/.config'`.
+will be copied. Its default value is `"$HOME/.config"`.
 
 You can force the location of the `qstat` program with the `qstatCmd` variable.
 
 You can set the editor which will be used to edit the config file with the `-e`
-option with the `editor` variable. The default editor is `vim`.
+option with the `editor` variable.
 
 Finally, you can also force the location of the Python interpretor with the
 `pythonCmd` and `pythonVersion` variables. For example, if you have a fancy

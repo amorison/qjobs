@@ -131,7 +131,7 @@ class JobList:
 
         fmt = self.args.out_format.format(**wdt)
         for job in jobset_out:
-            print(job.rep(fmt))
+            yield job.rep(fmt)
 
     def rep_tot(self):
         """handle the representation of the totals"""
@@ -139,7 +139,7 @@ class JobList:
         from itertools import zip_longest as ziplgst
         from math import ceil
 
-        print('tot: {}'.format(len(self.jobset)))
+        yield 'tot: {}'.format(len(self.jobset))
         for itm in self.args.total:
             dct = self.total[itm.lower()]
             if '' in dct:
@@ -173,11 +173,13 @@ class JobList:
                           fillvalue=(None, None))
             dct = zip(*dct)
 
-            print()
+            yield ''
             for line in dct:
-                print(*('{}: {}'.format(str(k).ljust(mlk), str(v).rjust(mlv))
-                        for k, v in line if (k, v) != (None, None)),
-                      sep=self.args.sep_tot)
+                yield self.args.sep_tot.join(('{}: {}'.format(
+                                              str(k).ljust(mlk),
+                                              str(v).rjust(mlv))
+                                              for k, v in line
+                                              if (k, v) != (None, None)))
 
     def update(self, today):
         """update elapsed times, using today as reference"""

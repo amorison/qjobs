@@ -41,18 +41,15 @@ def main():
     else:
         alljobs = JobList(alljobs, args)
 
-        if args.out and not args.reverse:
-            alljobs.rep()
-        if args.total and args.reverse:
-            alljobs.rep_tot()
+        out_gen = (alljobs.rep(), alljobs.rep_tot())
+        for line in out_gen[args.reverse]:
+            print(line)
 
         if args.out and args.total:
             print()
 
-        if args.total and not args.reverse:
-            alljobs.rep_tot()
-        if args.out and args.reverse:
-            alljobs.rep()
+        for line in out_gen[not args.reverse]:
+            print(line)
 
 
 if __name__ == '__main__':

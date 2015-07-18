@@ -175,11 +175,9 @@ class JobList:
 
             yield ''
             for line in dct:
-                yield self.args.sep_tot.join(('{}: {}'.format(
-                                              str(k).ljust(mlk),
-                                              str(v).rjust(mlv))
-                                              for k, v in line
-                                              if (k, v) != (None, None)))
+                yield self.args.sep_tot.join(
+                    ('{}: {}'.format(str(k).ljust(mlk), str(v).rjust(mlv))
+                     for k, v in line if (k, v) != (None, None)))
 
     def update(self, today):
         """update elapsed times, using today as reference"""

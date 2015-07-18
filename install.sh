@@ -97,7 +97,6 @@ echo "will use $pythonCmd (Python $pythonVersion)"
 
 if [ "$pythonVersion" -eq "2" ]; then
     \sed -i '3 a from __future__ import print_function' $instdest/main.py
-    \sed -i '2 a from __future__ import print_function' $instdest/cmdargs.py
     \sed -i '2 a from __future__ import print_function' $instdest/configfile.py
     \sed -i 's/ConfigParser/SafeConfigParser/' $instdest/configfile.py
     \sed -i 's/configparser/ConfigParser/' $instdest/configfile.py

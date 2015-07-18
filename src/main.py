@@ -12,10 +12,32 @@ def main():
     import xml.etree.ElementTree as ET
 
     import cmdargs
+    import configfile
     import constants
     from job import Job, JobList, JobGroup
 
     args = cmdargs.parse()
+    if args.edit_interactive:
+        print(constants.path_config+':\n')
+        print('option: current value (default)> enter new value')
+        print('empty string to keep current value')
+        print('single x to set to default value')
+        print('trailing spaces to set to an actual x/empty string', end='\n\n')
+        args = vars(args)
+        for opt, dflt_val in constants.default_config.items():
+            new_val = input('{}: {} ({})> '.format(opt, args[opt], dflt_val))
+            if new_val:
+                if new_val == 'x':
+                    args[opt] = dflt_val
+                else:
+                    args[opt] = new_val
+
+        if not str(args['width_tot']).isdigit():
+            args['width_tot'] = constants.default_config['width_tot']
+
+        configfile.write(args, constants.path_config)
+        sys.exit()
+
     if args.items:
         print(*('{}: {}'.format(k, v.dscr) for k, v in constants.itms.items()),
               sep='\n')

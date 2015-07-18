@@ -102,7 +102,7 @@ if [ "$pythonVersion" -eq "2" ]; then
     \sed -i 's/configparser/ConfigParser/' $instdest/configfile.py
     \sed -i 's/configparser/ConfigParser/' $instdest/main.py
     \sed -i 's/zip_longest/izip_longest/' $instdest/job.py
-    \sed -i 's/input(/raw_input(/' $instdest/cmdargs.py
+    \sed -i 's/input(/raw_input(/' $instdest/main.py
     echo 'sources modified for compatibility with Python 2'
 fi
 

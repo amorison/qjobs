@@ -130,8 +130,9 @@ class JobList:
             wdt[itm] = self.width[itm][-1]
 
         fmt = self.args.out_format.format(**wdt)
-        for job in jobset_out:
-            yield job.rep(fmt)
+        if fmt:
+            for job in jobset_out:
+                yield job.rep(fmt)
 
     def rep_tot(self):
         """handle the representation of the totals"""

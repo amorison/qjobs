@@ -12,23 +12,23 @@ automatically made by the `install.sh` script.
 
 ## Installation
 
-The installation is made as simple as possible for you. Everything is managed
-by the installation script `install.sh`.
+For a complete explanation of the installation process and how you can
+customize it, please see [the related wiki
+page](https://github.com/amorison/qjobs/wiki/Installation).
 
-- Allow execution of `install.sh` with the command `chmod u+x install.sh`.
-- Run the installation script with `./install.sh`.
-- If the script doesn't manage to find qstat and/or Python in your PATH, you
-  will be asked to enter their location.
-- You will have to choose an editor (used with the `-e` option of qjobs to edit
-  the config file), leave an empty line to use vim.
-- That's it! If `~/bin` is in your PATH environment variable, you only have to
-  type `qjobs` to launch the wrapper. Enjoy!
+If you're already bored by the idea of wasting some RAM to open a new tab in
+your browser, here is a quick explanation:
+
+    git clone --recursive https://github.com/amorison/qjobs.git
+    cd qjobs
+    ./install.sh
+
+That's it! If `~/bin` is in your PATH environment variable, you only have to
+type `qjobs` to launch the wrapper. Enjoy!
 
 If you want to uninstall `qjobs`, call the installation script with the `-u`
 option: `./install.sh -u`.
 
-To customize the installation process, please see [the related wiki
-page](https://github.com/amorison/qjobs/wiki/Installation).
 
 ## Documentation and examples
 

@@ -1,12 +1,12 @@
 #!/bin/sh
 
 # name and location of link
-linkDir="$HOME/bin"
-linkName='qjobs'
+linkDir=~/bin
+linkName=qjobs
 
 # installation directories
-installDir="$HOME/.local/share"
-configDir="$HOME/.config"
+installDir=~/.local/share
+configDir=~/.config
 
 # tools location
 qstatCmd=
@@ -135,7 +135,7 @@ pathConfig="$pathConfig/qjobs.rc"
 \sed -i "s!QSTAT_CMD!$qstatCmd!" $instdest/constants.py
 \sed -i "s!PYTHON_CMD!$pythonCmd!" $instdest/main.py
 \sed -i "s!PATH_CONFIG!$pathConfig!" $instdest/constants.py
-\sed -i "s/USER_NAME/$USER/" $instdest/constants.py
+\sed -i "s/USER_NAME/$usrnm/" $instdest/constants.py
 \sed -i "s!EDITOR!$editor!" $instdest/constants.py
 \chmod u+x $instdest/main.py
 

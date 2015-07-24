@@ -1,6 +1,7 @@
 """defines constants for qjobs"""
 
 from collections import OrderedDict, namedtuple
+from os.path import expandvars, expanduser
 
 Itmtp = namedtuple('Itmtp', ['dscr', 'xml_tag'])
 
@@ -21,6 +22,7 @@ itms = OrderedDict((
     ))
 
 path_config = 'PATH_CONFIG'
+path_config = expanduser(expandvars(path_config))
 
 dflt_section = 'Defaults'
 

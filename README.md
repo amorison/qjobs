@@ -1,6 +1,7 @@
 # qjobs
 
-qstat wrapper
+qjobs is an attempt to get a cleaner and more customizable output than the one
+provided by qstat (Sun Grid Engine).
 
 ## Compatibility
 

@@ -11,6 +11,9 @@ qjobs is developed with Python 3, but only minor modifications are required for
 this script to work with Python 2. If needed, these modifications are
 automatically made by the `install.sh` script.
 
+For Python 3, the required version is 3.2 or later. For Python 2, the required
+version is 2.7.
+
 ## Quick installation
 
 For a complete explanation of the installation process and how you can

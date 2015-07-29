@@ -12,13 +12,13 @@ def add_args(parser, defaults):
     parser.add_argument('-r', '--reverse', action='store_true',
                         help='total before out')
     parser.add_argument('-o', '--out', nargs='?', const='', metavar='ITEMS',
-                        help='specify which items are displayed.')
+                        help='specify which items are displayed')
     parser.add_argument('-O', '--out_format',
                         nargs='?', const='', metavar='FMT',
                         help='specify format of job list output')
     parser.add_argument('-t', '--total', nargs='?', const='', metavar='ITEMS',
                         help='specify items for which you want \
-                                to count the jobs.')
+                                to count the jobs')
     parser.add_argument('-s', '--sort', metavar='ITEMS',
                         help='specify the items to use to sort the jobs')
     parser.add_argument('--elapsed_format', metavar='FMT',

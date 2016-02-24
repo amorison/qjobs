@@ -28,14 +28,14 @@ For a complete explanation of the installation process and how you can
 customize it, please see the documentation.
 
 If you're already bored by the idea of wasting some RAM to open a new tab in
-your browser, here is a hurry-geek-friendly explanation:
+your browser, here is a hurry-geek-friendly explanation::
 
     git clone https://github.com/amorison/qjobs.git
     cd qjobs
     ./install.sh
 
-That's it! If `~/bin` is in your PATH environment variable, you only have to
-type `qjobs` to launch the wrapper. Enjoy!
+That's it! If ``~/bin`` is in your PATH environment variable, you only have to
+type ``qjobs`` to launch the wrapper. Enjoy!
 
 If you want to uninstall ``qjobs``, call the installation script with the
 ``-u`` (as in "unlikely") option: ``./install.sh -u``.

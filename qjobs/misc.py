@@ -1,6 +1,6 @@
 """miscellaneous functions"""
 
-import constants
+from . import constants
 from datetime import datetime, timedelta
 
 

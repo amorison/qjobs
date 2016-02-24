@@ -1,21 +1,16 @@
-#!PYTHON_CMD
 """qjobs is a qstat wrapper designed to get a better output."""
 
 import sys
+from datetime import datetime
+from subprocess import Popen, PIPE
+import xml.etree.ElementTree as ET
+
+from . import cmdargs, configfile, constants
+from .job import Job, JobList, JobGroup
 
 
 def main():
     """execute qstat and produces output according to chosen options."""
-
-    from datetime import datetime
-    from subprocess import Popen, PIPE
-    import xml.etree.ElementTree as ET
-
-    import cmdargs
-    import configfile
-    import constants
-    from job import Job, JobList, JobGroup
-
     args = cmdargs.parse()
     if args.edit_interactive:
         print(constants.path_config+':\n')
@@ -74,8 +69,8 @@ def main():
             print(line)
 
 
-if __name__ == '__main__':
-
+def main_wrapper():
+    """Catch exception in a log file."""
     try:
         main()
     except Exception as excpt:
@@ -95,3 +90,7 @@ if __name__ == '__main__':
             print('ERROR! Please check', tmpf.name, 'for more information.')
             sys.exit()
         raise
+
+
+if __name__ == '__main__':
+    main_wrapper()

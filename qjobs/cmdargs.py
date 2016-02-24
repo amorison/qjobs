@@ -55,9 +55,8 @@ def parse():
     from subprocess import call
     import sys
 
-    import configfile
-    import constants
-    from misc import itmfilter, rm_brackets
+    from . import configfile, constants
+    from .misc import itmfilter, rm_brackets
 
     parser = argparse.ArgumentParser(
         description='qstat wrapper for better output. \

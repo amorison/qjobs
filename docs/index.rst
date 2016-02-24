@@ -12,6 +12,4 @@ Contents:
    :maxdepth: 2
 
    intro
-   install
-   update
    commands

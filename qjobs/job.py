@@ -8,8 +8,8 @@ from collections import Counter
 from datetime import datetime
 from functools import total_ordering
 
-import constants
-from misc import time_handler
+from . import constants
+from .misc import time_handler
 
 
 @total_ordering

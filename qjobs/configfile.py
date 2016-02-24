@@ -1,21 +1,20 @@
 """provides read/write config file functions"""
 
-from configparser import ConfigParser as config_parser
+from configparser import ConfigParser
+from configparser import NoSectionError, MissingSectionHeaderError
+import sys
 
-import constants
+from . import constants
 
 
 def read(args):
     """read config file"""
-
-    from configparser import NoSectionError, MissingSectionHeaderError
-
     config_file = args.config
     if not config_file:
         config_file = constants.path_config
 
     try:
-        conf_parser = config_parser()
+        conf_parser = ConfigParser()
         conf_parser.read(config_file)
         defaults = constants.OrderedDict(
             conf_parser.items(constants.dflt_section))
@@ -36,10 +35,7 @@ def read(args):
 
 def write(args, out_stream):
     """write config file"""
-
-    import sys
-
-    config = config_parser()
+    config = ConfigParser()
     config.add_section(constants.dflt_section)
     for opt in constants.default_config:
         config.set(constants.dflt_section, opt, str(args[opt]).strip())

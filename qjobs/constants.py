@@ -1,7 +1,8 @@
 """defines constants for qjobs"""
 
+import getpass
 from collections import OrderedDict, namedtuple
-from os.path import expandvars, expanduser
+from os.path import expanduser
 
 Itmtp = namedtuple('Itmtp', ['dscr', 'xml_tag'])
 
@@ -21,8 +22,8 @@ itms = OrderedDict((
     ('l', Itmtp('number of slots used', ['slots']))
     ))
 
-path_config = 'PATH_CONFIG'
-path_config = expanduser(expandvars(path_config))
+path_config = '~/.config/qjobs/config'
+path_config = expanduser(path_config)
 
 dflt_section = 'Defaults'
 
@@ -37,7 +38,7 @@ default_config = OrderedDict((
     ('width_tot', 120),
     ('sep_tot', '[     ]'),
     ('sep', '[   ]'),
-    ('users', 'USER_NAME'),
-    ('editor', 'EDITOR'),
-    ('qstat_cmd', 'QSTAT_CMD')
+    ('users', getpass.getuser()),
+    ('editor', 'vim'),
+    ('qstat_cmd', 'qstat')
     ))

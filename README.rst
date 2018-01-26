@@ -1,5 +1,5 @@
 .. image:: https://readthedocs.org/projects/qjobs/badge/?version=latest
-    :target: http://qjobs.readthedocs.org/en/latest/?badge=latest
+    :target: https://qjobs.readthedocs.org/en/latest/?badge=latest
     :alt: Documentation Status
 
 
@@ -12,15 +12,12 @@ provided by qstat (Sun Grid Engine).
 Quick installation
 ------------------
 
-``qjobs`` only uses built-in Python modules. It is compatible with Python3.3
-and higher.
+``qjobs`` is available on PyPI. It is compatible with Python3.4 and higher.
 
-Installation of ``qjobs`` can be done with ``setuptools``. ::
+Installation of ``qjobs`` can be done with ``pip``::
 
-    git clone https://github.com/amorison/qjobs.git
-    cd qjobs
-    python3 setup.py install --user
+    python3 -m pip install -U --user qjobs
 
-That's it! If the directory where setuptools installs packages (usually
+That's it! If the directory where pip installs packages (usually
 ``~/.local/bin``) is in your ``PATH`` environment variable, you only have to
 run ``qjobs`` from the command line to launch the wrapper. Enjoy!

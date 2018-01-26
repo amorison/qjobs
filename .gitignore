@@ -1,3 +1,4 @@
+*.swp
 *.xml
 qjobs/__pycache__/
 docs/_build/

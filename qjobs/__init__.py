@@ -1,4 +1,7 @@
-"""Define current version."""
+"""The qjobs tool is an attempt at getting a clean qstat output.
+
+See the documentation at https://qjobs.readthedocs.io
+"""
 
 from setuptools_scm import get_version
 from pkg_resources import get_distribution, DistributionNotFound

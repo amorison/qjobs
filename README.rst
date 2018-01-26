@@ -12,7 +12,7 @@ provided by qstat (Sun Grid Engine).
 Quick installation
 ------------------
 
-``qjobs`` only uses built-in Python modules. It is compatible with Python3.3
+``qjobs`` only uses built-in Python modules. It is compatible with Python3.4
 and higher.
 
 Installation of ``qjobs`` can be done with ``setuptools``. ::

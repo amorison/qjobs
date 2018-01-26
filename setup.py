@@ -1,12 +1,11 @@
 from setuptools import setup
-from qjobs import __version__
 
 with open('README.rst') as rdm:
     README = rdm.read()
 
 setup(
     name='qjobs',
-    version=__version__,
+    use_scm_version=True,
 
     description='Get a clean and flexible output from qstat!',
     long_description=README,
@@ -30,7 +29,6 @@ setup(
     entry_points={
         'console_scripts': ['qjobs = qjobs.main:main_wrapper']
         },
+    setup_requires=['setuptools_scm'],
+    install_requires=['setuptools_scm'],
 )
-
-if 'dev' in __version__:
-    print('UNSTABLE DEVELOPMENT VERSION {}'.format(__version__))

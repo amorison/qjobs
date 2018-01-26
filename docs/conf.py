@@ -58,7 +58,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'qjobs'
-copyright = '2016, Adrien Morison'
+copyright = '2016 - 2018, Adrien Morison'
 author = 'Adrien Morison'
 
 # The version info for the project you're documenting, acts as replacement for

@@ -1,5 +1,5 @@
 .. image:: https://readthedocs.org/projects/qjobs/badge/?version=latest
-    :target: http://qjobs.readthedocs.org/en/latest/?badge=latest
+    :target: https://qjobs.readthedocs.org/en/latest/?badge=latest
     :alt: Documentation Status
 
 

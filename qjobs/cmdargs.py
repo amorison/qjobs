@@ -9,6 +9,7 @@ SUB_CMDS = {
     None: Subcmd([], {}, 'qstat wrapper for better output'),
     '': Subcmd(['general', 'jobs', 'total'], {}, ''),
     'config': Subcmd([], {}, 'configuration handling'),
+    'version': Subcmd([], {}, 'print version and exit'),
 }
 
 

@@ -5,12 +5,16 @@ from datetime import datetime
 from subprocess import Popen, PIPE
 import xml.etree.ElementTree as ET
 from loam.tools import config_cmd_handler
-from . import conf, cmdargs, constants
+from . import __version__, conf, cmdargs, constants
 from .job import Job, JobList, JobGroup
 
 
 def main(subcmd=None):
     """execute qstat and produces output according to chosen options."""
+    if subcmd == 'version':
+        print('qjobs version: {}'.format(__version__))
+        sys.exit()
+
     if subcmd == 'config':
         config_cmd_handler(conf)
         sys.exit()

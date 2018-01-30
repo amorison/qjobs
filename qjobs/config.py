@@ -23,7 +23,7 @@ CONF_DEF = {
             ConfOpt(None, True, 'i', dict(action='store_true'), False,
                     'print ITEMS list and exit'),
         'reverse':
-            ConfOpt(None, True, 'r', dict(action='store_true'), False,
+            ConfOpt(False, True, 'r', dict(action='store_true'), False,
                     'print total before list of jobs'),
         'mute':
             ConfOpt(None, True, None, dict(action='store_true'), False,

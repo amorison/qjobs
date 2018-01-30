@@ -32,5 +32,5 @@ setup(
         'console_scripts': ['qjobs = qjobs.__main__:main']
         },
     setup_requires=['setuptools_scm'],
-    install_requires=['setuptools_scm', 'loam'],
+    install_requires=['setuptools_scm', 'loam>=0.1.1'],
 )

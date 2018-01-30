@@ -29,8 +29,8 @@ setup(
 
     packages=['qjobs'],
     entry_points={
-        'console_scripts': ['qjobs = qjobs.main:main_wrapper']
+        'console_scripts': ['qjobs = qjobs.__main__:main']
         },
     setup_requires=['setuptools_scm'],
-    install_requires=['setuptools_scm'],
+    install_requires=['setuptools_scm', 'loam'],
 )

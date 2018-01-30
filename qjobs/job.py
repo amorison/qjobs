@@ -8,7 +8,7 @@ from collections import Counter
 from datetime import datetime
 from functools import total_ordering
 
-from . import constants
+from . import conf, constants
 from .misc import time_handler
 
 
@@ -16,7 +16,7 @@ from .misc import time_handler
 class Job:
     """Job class with hash and comparison based on job id"""
 
-    def __init__(self, job_xml, args, today):
+    def __init__(self, job_xml, today):
         """create a job with the xml 'joblist' tree"""
 
         self.dct = {}
@@ -35,7 +35,7 @@ class Job:
         if self.dct['k']:
             self.dct['q'], self.dct['d'] = self.dct['k'].rsplit('@')
 
-        self.update(today, args)
+        self.update(today)
 
     def __hash__(self):
         """hash based on job id"""
@@ -57,11 +57,11 @@ class Job:
         """representation of job based on format fmt"""
         return fmt.format(**self.dct)
 
-    def update(self, today, args):
+    def update(self, today):
         """update elapsed time field, using today as reference"""
         self.dct['t'], self.dct['e'] = time_handler(self.dct['t'],
-                                                    args.start_format,
-                                                    args.elapsed_format,
+                                                    conf.jobs.start_format,
+                                                    conf.jobs.elapsed_format,
                                                     today)
 
 
@@ -69,13 +69,12 @@ class JobList:
     """JobList class which handles the width of the different
     fields and the job counting for total"""
 
-    def __init__(self, job_list, args):
+    def __init__(self, job_list):
         """constructor expects a list of Job"""
         self.jobset = sorted(set(job_list))
         self.njobs = len(self.jobset)
         self.width = {}
         self.total = {}
-        self.args = args
         self.count()
 
     def add(self, new_job):
@@ -87,7 +86,7 @@ class JobList:
 
         today = datetime.today()
         self.update(today)
-        new_job.update(today, self.args)
+        new_job.update(today)
 
         if new_job == old_job:
             for itm in constants.itms:
@@ -121,15 +120,15 @@ class JobList:
         """handle the representation of the entire list"""
 
         jobset_out = sorted(self.jobset)
-        for itm in self.args.sort:
+        for itm in conf.jobs.sort:
             jobset_out.sort(key=lambda job: job.get(itm),
-                            reverse=itm in self.args.reversed_itms)
+                            reverse=itm in conf.jobs.reversed_itms)
 
         wdt = {}
         for itm in constants.itms:
             wdt[itm] = self.width[itm][-1]
 
-        fmt = self.args.out_format.format(**wdt)
+        fmt = conf.jobs.out_format.format(**wdt)
         if fmt:
             for job in jobset_out:
                 yield job.rep(fmt)
@@ -141,14 +140,14 @@ class JobList:
         from math import ceil
 
         yield 'tot: {}'.format(len(self.jobset))
-        for itm in self.args.total:
+        for itm in conf.total.total:
             dct = self.total[itm.lower()]
             if '' in dct:
                 dct['not set'] = dct.pop('')
 
             dct = sorted(dct.items(),
                          key=lambda x: x[0],
-                         reverse=itm.lower() in self.args.reversed_itms)
+                         reverse=itm.lower() in conf.jobs.reversed_itms)
             if itm.lower() in 'te':
                 dct_tmp = ((str(k), v) for k, v in dct)
                 dct = [next(dct_tmp)]
@@ -165,8 +164,8 @@ class JobList:
 
             mlk = max(len(str(k)) for k, _ in dct)
             mlv = max(len(str(v)) for _, v in dct)
-            nfld = (self.args.width_tot+len(self.args.sep_tot)) // \
-                   (mlk+mlv+2+len(self.args.sep_tot))
+            nfld = (conf.total.width_tot+len(conf.total.sep_tot)) // \
+                   (mlk+mlv+2+len(conf.total.sep_tot))
             if nfld == 0:
                 nfld = 1
 
@@ -176,14 +175,14 @@ class JobList:
 
             yield ''
             for line in dct:
-                yield self.args.sep_tot.join(
+                yield conf.total.sep_tot.join(
                     ('{}: {}'.format(str(k).ljust(mlk), str(v).rjust(mlv))
                      for k, v in line if (k, v) != (None, None)))
 
     def update(self, today):
         """update elapsed times, using today as reference"""
         for job in self.jobset:
-            job.update(today, self.args)
+            job.update(today)
         self.count()
 
 

@@ -1,5 +1,13 @@
 """Make qjobs a callable module."""
 
-from .main import main_wrapper
+from . import core, cmdargs
 
-main_wrapper()
+
+def main():
+    """qjobs entry point"""
+    subcmd = cmdargs.parse()
+    core.main(subcmd)
+
+
+if __name__ == '__main__':
+    main()

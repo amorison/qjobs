@@ -2,6 +2,9 @@
     :target: https://qjobs.readthedocs.org/en/latest/?badge=latest
     :alt: Documentation Status
 
+.. image:: https://badge.fury.io/py/qjobs.svg
+   :target: https://badge.fury.io/py/qjobs
+   :alt: PyPI version
 
 qjobs
 =====

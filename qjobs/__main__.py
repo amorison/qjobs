@@ -1,12 +1,12 @@
 """Make qjobs a callable module."""
 
-from . import core, cmdargs
+from . import commands
 
 
 def main():
     """qjobs entry point"""
-    subcmd = cmdargs.parse()
-    core.main(subcmd)
+    subcmd = commands.parse()
+    commands.main(subcmd)
 
 
 if __name__ == '__main__':

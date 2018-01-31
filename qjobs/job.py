@@ -164,8 +164,8 @@ class JobList:
 
             mlk = max(len(str(k)) for k, _ in dct)
             mlv = max(len(str(v)) for _, v in dct)
-            nfld = (conf.total.width_tot+len(conf.total.sep_tot)) // \
-                   (mlk+mlv+2+len(conf.total.sep_tot))
+            nfld = (conf.total.width+len(conf.total.sep)) // \
+                   (mlk+mlv+2+len(conf.total.sep))
             if nfld == 0:
                 nfld = 1
 
@@ -175,7 +175,7 @@ class JobList:
 
             yield ''
             for line in dct:
-                yield conf.total.sep_tot.join(
+                yield conf.total.sep.join(
                     ('{}: {}'.format(str(k).ljust(mlk), str(v).rjust(mlv))
                      for k, v in line if (k, v) != (None, None)))
 

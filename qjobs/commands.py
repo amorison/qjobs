@@ -29,7 +29,7 @@ def parse():
     conf.jobs.sort = itmfilter(conf.jobs.sort)
 
     conf.jobs.sep = rm_brackets(conf.jobs.sep)
-    conf.total.sep_tot = rm_brackets(conf.total.sep_tot)
+    conf.total.sep = rm_brackets(conf.total.sep)
 
     conf.jobs.start_format = conf.jobs.start_format.\
         replace('{', '%').replace('}', '')

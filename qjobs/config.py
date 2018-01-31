@@ -55,18 +55,18 @@ CONF_DEF = {
             ConfOpt('{H:03d}:{m:02d} ({D:.2f} days)', False, None, {}, True,
                     'e ITEM format'),
         'sep':
-            ConfOpt('[   ]', True, None, {}, True,
+            ConfOpt('[   ]', False, None, {}, True,
                     'separator between columns'),
     },
     'total': {
         'total':
             ConfOpt('s', True, 't', _ITEMS, True,
                     'list of ITEMS in total section'),
-        'width_tot':
+        'width':
             ConfOpt(120, False, None, {}, True,
                     'max output width for total section'),
-        'sep_tot':
-            ConfOpt('[     ]', True, None, {}, True,
+        'sep':
+            ConfOpt('[     ]', False, None, {}, True,
                     'separator between columns'),
     },
     'config': loam.tools.config_conf_section(),

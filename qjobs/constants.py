@@ -4,7 +4,7 @@ from collections import OrderedDict, namedtuple
 
 Itmtp = namedtuple('Itmtp', ['dscr', 'xml_tag'])
 
-itms = OrderedDict((
+ITEMS = OrderedDict((
     ('i', Itmtp('job id', ['JB_job_number'])),
     ('p', Itmtp('job priority', ['JAT_prio'])),
     ('n', Itmtp('job name', ['JB_name'])),

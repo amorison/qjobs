@@ -20,7 +20,7 @@ class Job:
         """create a job with the xml 'joblist' tree"""
 
         self.dct = {}
-        for itm, itmtp in constants.itms.items():
+        for itm, itmtp in constants.ITEMS.items():
             self.dct[itm] = ''
             for tag in itmtp.xml_tag:
                 elts = job_xml.iter(tag)
@@ -89,7 +89,7 @@ class JobList:
         new_job.update(today)
 
         if new_job == old_job:
-            for itm in constants.itms:
+            for itm in constants.ITEMS:
                 jitm = old_job.get(itm)
                 lgt = len(str(jitm))
                 wlist = self.width[itm]
@@ -98,7 +98,7 @@ class JobList:
                 self.total[itm] -= Counter([jitm])
             del self.jobset[idx]
 
-        for itm in constants.itms:
+        for itm in constants.ITEMS:
             jitm = new_job.get(itm)
             lgt = len(str(jitm))
             wlist = self.width[itm]
@@ -110,7 +110,7 @@ class JobList:
 
     def count(self):
         """determine width of fields and count total"""
-        for itm in constants.itms:
+        for itm in constants.ITEMS:
             self.width[itm] = sorted(len(str(job.get(itm)))
                                      for job in self.jobset)
             self.total[itm] = Counter(job.get(itm)
@@ -125,7 +125,7 @@ class JobList:
                             reverse=itm in conf.jobs.reversed_itms)
 
         wdt = {}
-        for itm in constants.itms:
+        for itm in constants.ITEMS:
             wdt[itm] = self.width[itm][-1]
 
         fmt = conf.jobs.out_format.format(**wdt)
@@ -164,12 +164,12 @@ class JobList:
 
             mlk = max(len(str(k)) for k, _ in dct)
             mlv = max(len(str(v)) for _, v in dct)
-            nfld = (conf.total.width+len(conf.total.sep)) // \
-                   (mlk+mlv+2+len(conf.total.sep))
+            nfld = (conf.total.width + len(conf.total.sep)) // \
+                   (mlk + mlv + 2 + len(conf.total.sep))
             if nfld == 0:
                 nfld = 1
 
-            dct = ziplgst(*(iter(dct), ) * int(ceil(len(dct)/float(nfld))),
+            dct = ziplgst(*(iter(dct), ) * int(ceil(len(dct) / float(nfld))),
                           fillvalue=(None, None))
             dct = zip(*dct)
 
@@ -184,7 +184,3 @@ class JobList:
         for job in self.jobset:
             job.update(today)
         self.count()
-
-
-class JobGroup:
-    pass

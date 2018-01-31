@@ -1,7 +1,7 @@
 """miscellaneous functions"""
 
-from . import constants
 from datetime import datetime, timedelta
+from . import constants
 
 
 def rm_brackets(string):
@@ -18,8 +18,8 @@ def rm_brackets(string):
 def itmfilter(string, allow_caps=False):
     """remove undefined items from an ITEMS string"""
     return ''.join((itm for itm in string
-                    if (itm in constants.itms or
-                        itm.lower() in constants.itms and allow_caps)))
+                    if (itm in constants.ITEMS or
+                        itm.lower() in constants.ITEMS and allow_caps)))
 
 
 class ElapsedTime(timedelta):

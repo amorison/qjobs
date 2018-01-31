@@ -7,7 +7,7 @@ import xml.etree.ElementTree as ET
 from loam.tools import config_cmd_handler, Subcmd
 from . import __version__, conf, constants
 from .misc import itmfilter, rm_brackets
-from .job import Job, JobList, JobGroup
+from .job import Job, JobList
 
 
 SUB_CMDS = {
@@ -50,7 +50,8 @@ def main(subcmd=None):
         sys.exit()
 
     if conf.general.items:
-        print(*('{}: {}'.format(k, v.dscr) for k, v in constants.itms.items()),
+        print(*('{}: {}'.format(k, v.dscr)
+                for k, v in constants.ITEMS.items()),
               sep='\n')
         sys.exit()
 
@@ -63,10 +64,8 @@ def main(subcmd=None):
 
     qstat_out = ET.parse(qstat_out).getroot().iter('job_list')
 
-    alljobs = []
     today = datetime.today()
-    for j in qstat_out:
-        alljobs.append(Job(j, today))
+    alljobs = [Job(j, today) for j in qstat_out]
 
     if not alljobs:
         if not conf.general.mute:

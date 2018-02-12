@@ -9,7 +9,7 @@ from loam.tools import ConfOpt
 HOME = pathlib.Path(expanduser('~'))
 
 CONFIG_DIR = HOME / '.config' / 'qjobs'
-CONFIG_FILE = CONFIG_DIR / 'config'
+CONFIG_FILE = CONFIG_DIR / 'config.toml'
 
 _ITEMS = dict(nargs='?', const='', metavar='ITEMS')
 _USERS = dict(nargs='?', const='*', metavar='USR1,USR2,...')
@@ -55,7 +55,7 @@ CONF_DEF = {
             ConfOpt('{H:03d}:{m:02d} ({D:.2f} days)', False, None, {}, True,
                     'e ITEM format'),
         'sep':
-            ConfOpt('[   ]', False, None, {}, True,
+            ConfOpt('   ', False, None, {}, True,
                     'separator between columns'),
     },
     'total': {
@@ -66,7 +66,7 @@ CONF_DEF = {
             ConfOpt(120, False, None, {}, True,
                     'max output width for total section'),
         'sep':
-            ConfOpt('[     ]', False, None, {}, True,
+            ConfOpt('     ', False, None, {}, True,
                     'separator between columns'),
     },
     'config': loam.tools.config_conf_section(),

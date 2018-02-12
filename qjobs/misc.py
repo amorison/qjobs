@@ -4,17 +4,6 @@ from datetime import datetime, timedelta
 from . import constants
 
 
-def rm_brackets(string):
-    """remove [ ] if at 1st and last char"""
-
-    if string and string[0] == '[':
-        string = string[1:]
-    if string and string[-1] == ']':
-        string = string[:-1]
-
-    return string
-
-
 def itmfilter(string, allow_caps=False):
     """remove undefined items from an ITEMS string"""
     return ''.join((itm for itm in string

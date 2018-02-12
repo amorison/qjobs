@@ -6,7 +6,7 @@ from subprocess import Popen, PIPE
 import xml.etree.ElementTree as ET
 from loam.tools import config_cmd_handler, Subcmd
 from . import __version__, conf, constants
-from .misc import itmfilter, rm_brackets
+from .misc import itmfilter
 from .job import Job, JobList
 
 
@@ -21,15 +21,13 @@ SUB_CMDS = {
 def parse():
     """Parse arguments given in command line."""
 
-    conf.build_parser_(SUB_CMDS)
+    conf.sub_cmds_ = SUB_CMDS
+    conf.build_parser_()
     args, _ = conf.parse_args_()
 
     conf.jobs.out = itmfilter(conf.jobs.out)
     conf.total.total = itmfilter(conf.total.total, True)
     conf.jobs.sort = itmfilter(conf.jobs.sort)
-
-    conf.jobs.sep = rm_brackets(conf.jobs.sep)
-    conf.total.sep = rm_brackets(conf.total.sep)
 
     conf.jobs.start_format = conf.jobs.start_format.\
         replace('{', '%').replace('}', '')

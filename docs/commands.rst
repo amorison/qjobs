@@ -84,63 +84,10 @@ priority, they are sorted by ID. The sortings are made in ascending order,
 except for the items specified in the ``reversed_itms`` list (``psl`` by
 default) which are sorted in descending order (see Configuration options).
 
-* ``--sep  SEP``
-
 * ``-O, --out_format  [FMT]``
-
-* ``--sep_tot  SEP``
-
-* ``--width_tot  INT``
-
-* ``--elapsed_format  FMT``
 
 * Configuration options
 
-The main config file (``~/.config/qjobs/qjobs.rc`` by default) contains
-user-defined values for the following variables (all in the ``Defaults``
-section):
-
-================== ================================== ========================================
-Variable           Default value                      Comments
-================== ================================== ========================================
-``out``            ``instq``                          See ``-o`` option
-``total``          ``s``                              See ``-t`` option
-``sort``           ``ips``                            See ``-s`` option
-``reversed_itms``  ``psl``                            List of item sorted by descending order
-``out_format``     None                               See ``-O`` option
-``start_format``   ``{Y}-{m}-{d} {H}:{M}:{S}``        *to do*
-``elapsed_format`` ``{H:03d}:{m:02d} ({D:.2f} days)`` *to do*
-``width_tot``      ``120``                            See ``--width_tot`` option
-``sep_tot``        ``[     ]``                        See ``--sep_tot`` option
-``sep``            ``[   ]``                          See ``--sep`` option
-``users``          ``$USER``                          See ``-u`` option
-``editor``         ``vim``                            Editor used by ``-e`` option
-``qstat_cmd``      ``qstat``                          Command launched as qstat
-================== ================================== ========================================
-
-* ``-c, --config  [FILE]``
-
-Use ``FILE`` as config file instead of the main config file. If no file is
-given, the current config (taking command line arguments into accounts) is
-displayed formatted as a valid config file. This is useful to create a new
-config file.
-
-* ``--default_config``
-
-The main config file is filled with the default value for each option.
-
-* ``-e, --edit_config``
-
-Open the main config file in the editor.
-
-* ``-E, --edit_interactive``
-
-Edit the main config file in an interactive way. For each option, the following
-prompt is displayed::
-
-    option_name: current_value (default_value)>
-
-You can then type the new value you want and hit enter to validate.  If you
-provide an empty string, the current value is kept. If you type a single ``x``,
-the value is set to the default. If you want to set an actual empty string or
-an actual ``x``, make sure to add one space before hitting the enter key.
+The global config file (``~/.config/qjobs/config.toml``) contains user-defined
+values for configuration options. See ``qjobs config --help`` for available
+command line arguments.

@@ -46,7 +46,7 @@ CONF_DEF = {
             ConfOpt('ips', True, 's', dict(metavar='ITEMS'), True,
                     'sorting ITEMS'),
         'reversed_itms':
-            ConfOpt('psl', False, None, {}, False,
+            ConfOpt('psl', False, None, {}, True,
                     'ITEMS sorted by descreasing value'),
         'start_format':
             ConfOpt('{Y}-{m}-{d} {H}:{M}:{S}', False, None, {}, True,

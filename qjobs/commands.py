@@ -4,7 +4,9 @@ import sys
 from datetime import datetime
 from subprocess import Popen, PIPE
 import xml.etree.ElementTree as ET
+
 from loam.tools import config_cmd_handler, Subcmd
+
 from . import __version__, conf, constants
 from .misc import itmfilter
 from .job import Job, JobList

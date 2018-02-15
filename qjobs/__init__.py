@@ -6,6 +6,7 @@ See the documentation at https://qjobs.readthedocs.io
 from setuptools_scm import get_version
 from pkg_resources import get_distribution, DistributionNotFound
 from loam.manager import ConfigurationManager
+
 from . import config
 
 try:

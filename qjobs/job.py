@@ -7,6 +7,9 @@ from bisect import bisect_left
 from collections import Counter
 from datetime import datetime
 from functools import total_ordering
+from itertools import zip_longest as ziplgst
+from math import ceil
+
 
 from . import conf, constants
 from .misc import time_handler
@@ -135,9 +138,6 @@ class JobList:
 
     def rep_tot(self):
         """handle the representation of the totals"""
-
-        from itertools import zip_longest as ziplgst
-        from math import ceil
 
         yield 'tot: {}'.format(len(self.jobset))
         for itm in conf.total.total:

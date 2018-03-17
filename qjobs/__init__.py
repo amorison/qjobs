@@ -16,5 +16,6 @@ except LookupError:
 except (DistributionNotFound, ValueError):
     __version__ = 'unknown'
 
-conf = ConfigurationManager(config.CONF_DEF, config.CONFIG_FILE)
+conf = ConfigurationManager.from_dict_(config.CONF_DEF)
+conf.set_config_files_(config.CONFIG_FILE)
 conf.read_configs_()

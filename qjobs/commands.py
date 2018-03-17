@@ -5,7 +5,8 @@ from datetime import datetime
 from subprocess import Popen, PIPE
 import xml.etree.ElementTree as ET
 
-from loam.tools import config_cmd_handler, Subcmd
+from loam.cli import Subcmd, CLIManager
+from loam.tools import config_cmd_handler
 
 from . import __version__, conf, constants
 from .misc import itmfilter
@@ -13,19 +14,18 @@ from .job import Job, JobList
 
 
 SUB_CMDS = {
-    None: Subcmd([], {}, 'qstat wrapper for better output'),
-    '': Subcmd(['general', 'jobs', 'total'], {}, ''),
-    'config': Subcmd([], {}, 'configuration handling'),
-    'version': Subcmd([], {}, 'print version and exit'),
+    'common_': Subcmd('qstat wrapper for better output'),
+    'bare_': Subcmd('', 'general', 'jobs', 'total'),
+    'config': Subcmd('configuration handling'),
+    'version': Subcmd('print version and exit'),
 }
 
 
 def parse():
     """Parse arguments given in command line."""
 
-    conf.sub_cmds_ = SUB_CMDS
-    conf.build_parser_()
-    args, _ = conf.parse_args_()
+    climan = CLIManager(conf, **SUB_CMDS)
+    args, _ = climan.parse_args()
 
     conf.jobs.out = itmfilter(conf.jobs.out)
     conf.total.total = itmfilter(conf.total.total, True)

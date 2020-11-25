@@ -15,7 +15,7 @@ provided by qstat (Sun Grid Engine).
 Quick installation
 ------------------
 
-``qjobs`` is available on PyPI. It is compatible with Python3.4 and higher.
+``qjobs`` is available on PyPI. It is compatible with Python3.6 and higher.
 
 Installation of ``qjobs`` can be done with ``pip``::
 

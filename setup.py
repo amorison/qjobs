@@ -22,15 +22,16 @@ setup(
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3 :: Only',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
-        ],
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+    ],
+    python_requires='>=3.6',
 
     packages=['qjobs'],
     entry_points={
         'console_scripts': ['qjobs = qjobs.__main__:main']
         },
-    setup_requires=['setuptools_scm'],
     install_requires=['setuptools_scm', 'loam>=0.3.1'],
 )
